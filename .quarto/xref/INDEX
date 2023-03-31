@@ -14,5 +14,8 @@
   },
   "posts/my-new-post/index.qmd": {
     "index.html": "a8d15279"
+  },
+  "introduction_to_python.ipynb": {
+    "introduction_to_python.html": "8467928c"
   }
 }

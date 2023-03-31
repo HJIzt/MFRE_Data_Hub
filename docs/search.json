@@ -33,5 +33,12 @@
     "title": "Welcome To My Blog",
     "section": "",
     "text": "This is the first post in a Quarto blog. Welcome!\n\nSince this post doesn’t specify an explicit image, the first image in the post will be used in the listing page of posts."
+  },
+  {
+    "objectID": "introduction_to_python.html",
+    "href": "introduction_to_python.html",
+    "title": "Introduction to Python",
+    "section": "",
+    "text": "Learning Objectives:\n\nData types\nControl flow\nProject: Writing a loop\n\n\n1+1\n\n2"
   }
 ]
