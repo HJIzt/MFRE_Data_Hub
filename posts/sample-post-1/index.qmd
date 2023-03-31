@@ -2,7 +2,7 @@
 title: "Sample Post 1"
 author: "Harry Izatt"
 date: "2023-03-31"
-categories: [code]
+categories: [code, python]
 image: "mfre_logo.png"
 ---
 

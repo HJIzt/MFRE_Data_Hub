@@ -11,7 +11,7 @@
     "href": "index.html",
     "title": "MFRE_DATA_HUB_QUARTO",
     "section": "",
-    "text": "Sample Post 1\n\n\n\n\n\n\n\ncode\n\n\n\n\n\n\n\n\n\n\n\nMar 31, 2023\n\n\nHarry Izatt\n\n\n\n\n\n\n  \n\n\n\n\nPost With Code\n\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\n\n\nMar 31, 2023\n\n\nHarlow Malloc\n\n\n\n\n\n\n  \n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\n\n\nMar 28, 2023\n\n\nTristan O’Malley\n\n\n\n\n\n\nNo matching items"
+    "text": "Post With Code\n\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\n\n\nMar 31, 2023\n\n\nHarlow Malloc\n\n\n\n\n\n\n  \n\n\n\n\nSample Post 1\n\n\n\n\n\n\n\ncode\n\n\npython\n\n\n\n\n\n\n\n\n\n\n\nMar 31, 2023\n\n\nHarry Izatt\n\n\n\n\n\n\n  \n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\n\n\nMar 28, 2023\n\n\nTristan O’Malley\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "about.html",
@@ -40,5 +40,12 @@
     "title": "Introduction to Python",
     "section": "",
     "text": "Learning Objectives:\n\nData types\nControl flow\nProject: Writing a loop\n\n\n1+1\n\n2"
+  },
+  {
+    "objectID": "posts/sample-post-1/index.html",
+    "href": "posts/sample-post-1/index.html",
+    "title": "Sample Post 1",
+    "section": "",
+    "text": "This is the first sample blogpost for the MFRE Data Hub.\n\n1 + 1\n\n[1] 2"
   }
 ]
