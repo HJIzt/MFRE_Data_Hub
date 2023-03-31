@@ -20,5 +20,8 @@
   },
   "posts/sample-post-1/index.qmd": {
     "index.html": "8c398d23"
+  },
+  "query_function.ipynb": {
+    "query_function.html": "fc0eebd5"
   }
 }

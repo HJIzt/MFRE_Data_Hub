@@ -1,0 +1,4074 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.301">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>MFRE Data Hub - Yahoo Finance Query Function</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">MFRE Data Hub</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./about.html" rel="" target="">
+ <span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/HJIzt/MFRE_Data_Hub" rel="" target=""><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/mfreUBC?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor" rel="" target=""><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./introduction_to_python.html">Python Resources</a></li><li class="breadcrumb-item"><a href="./query_function.html">Yahoo Finance Query Function</a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation docked overflow-auto">
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Python Resources</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./introduction_to_python.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Introduction to Python</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./query_function.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Yahoo Finance Query Function</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <span class="sidebar-item-text sidebar-link text-start">
+ <span class="menu-text">R Resources</span></span>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <span class="sidebar-item-text sidebar-link text-start">
+ <span class="menu-text">Excel Resources</span></span>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <span class="sidebar-item-text sidebar-link text-start">
+ <span class="menu-text">SQL Resources</span></span>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <span class="sidebar-item-text sidebar-link text-start">
+ <span class="menu-text">Recommended Data Sources</span></span>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Yahoo Finance Query Function</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># uncomment and run to install the less common libraries used here</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">#!pip install yahoo-fin</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">#!pip install seaborn</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="101">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> yahoo_fin <span class="im">import</span> stock_info <span class="im">as</span> si</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="102">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> Image</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.core.display <span class="im">import</span> HTML </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="103">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># lets us view all the columns of very wide dataframes</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">'display.max_columns'</span>, <span class="va">None</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="104">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> inspect</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>inspect.getargspec(si.get_cash_flow)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>C:\Users\jizatt\AppData\Local\Temp\ipykernel_20732\1159952983.py:2: DeprecationWarning: inspect.getargspec() is deprecated since Python 3.0, use inspect.signature() or inspect.getfullargspec()
+  inspect.getargspec(si.get_cash_flow)</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="104">
+<pre><code>ArgSpec(args=['ticker', 'yearly'], varargs=None, keywords=None, defaults=(True,))</code></pre>
+</div>
+</div>
+<section id="sample-outputs-from-yahoo_fin-stock_info-functions" class="level1">
+<h1>Sample outputs from <code>yahoo_fin</code> <code>stock_info</code> functions</h1>
+<p>Since we’re new to this module, it’s worth playing around with it a bit to see how it works. We’re most interested in what info it outputs, and in what format.</p>
+<div class="cell" data-execution_count="105">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># this is what a cashflow query looks like, for sample company Google</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>cash_flow <span class="op">=</span> si.get_cash_flow(<span class="st">"goog"</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>cash_flow</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="105">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">endDate</th>
+<th data-quarto-table-cell-role="th">2021-12-31</th>
+<th data-quarto-table-cell-role="th">2020-12-31</th>
+<th data-quarto-table-cell-role="th">2019-12-31</th>
+<th data-quarto-table-cell-role="th">2018-12-31</th>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Breakdown</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">investments</td>
+<td>-8806000000</td>
+<td>-9822000000</td>
+<td>-4017000000</td>
+<td>-1972000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">changeToLiabilities</td>
+<td>1057000000</td>
+<td>1329000000</td>
+<td>465000000</td>
+<td>1438000000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">totalCashflowsFromInvestingActivities</td>
+<td>-35523000000</td>
+<td>-32773000000</td>
+<td>-29491000000</td>
+<td>-28504000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">netBorrowings</td>
+<td>-1236000000</td>
+<td>9661000000</td>
+<td>-268000000</td>
+<td>-61000000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">totalCashFromFinancingActivities</td>
+<td>-61362000000</td>
+<td>-24408000000</td>
+<td>-23209000000</td>
+<td>-13179000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">changeToOperatingActivities</td>
+<td>7140000000</td>
+<td>5813000000</td>
+<td>7822000000</td>
+<td>7890000000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">netIncome</td>
+<td>76033000000</td>
+<td>40269000000</td>
+<td>34343000000</td>
+<td>30736000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">changeInCash</td>
+<td>-5520000000</td>
+<td>7967000000</td>
+<td>1797000000</td>
+<td>5986000000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">repurchaseOfStock</td>
+<td>-50274000000</td>
+<td>-31149000000</td>
+<td>-18396000000</td>
+<td>-9075000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">effectOfExchangeRate</td>
+<td>-287000000</td>
+<td>24000000</td>
+<td>-23000000</td>
+<td>-302000000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">totalCashFromOperatingActivities</td>
+<td>91652000000</td>
+<td>65124000000</td>
+<td>54520000000</td>
+<td>47971000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">depreciation</td>
+<td>12430000000</td>
+<td>13679000000</td>
+<td>11651000000</td>
+<td>9029000000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">otherCashflowsFromInvestingActivities</td>
+<td>541000000</td>
+<td>68000000</td>
+<td>589000000</td>
+<td>98000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">changeToAccountReceivables</td>
+<td>-9095000000</td>
+<td>-6524000000</td>
+<td>-4340000000</td>
+<td>-2169000000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">otherCashflowsFromFinancingActivities</td>
+<td>-9852000000</td>
+<td>-2920000000</td>
+<td>-4545000000</td>
+<td>-4043000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">changeToNetincome</td>
+<td>4712000000</td>
+<td>9349000000</td>
+<td>7707000000</td>
+<td>3298000000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">capitalExpenditures</td>
+<td>-24640000000</td>
+<td>-22281000000</td>
+<td>-23548000000</td>
+<td>-25139000000</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="106">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># sample balance sheet query</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>balance_sheet <span class="op">=</span> si.get_balance_sheet(<span class="st">"goog"</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>balance_sheet</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="106">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">endDate</th>
+<th data-quarto-table-cell-role="th">2021-12-31</th>
+<th data-quarto-table-cell-role="th">2020-12-31</th>
+<th data-quarto-table-cell-role="th">2019-12-31</th>
+<th data-quarto-table-cell-role="th">2018-12-31</th>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Breakdown</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">intangibleAssets</td>
+<td>1.417000e+09</td>
+<td>1.445000e+09</td>
+<td>1.979000e+09</td>
+<td>2.220000e+09</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">totalLiab</td>
+<td>1.076330e+11</td>
+<td>9.707200e+10</td>
+<td>7.446700e+10</td>
+<td>5.516400e+10</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">totalStockholderEquity</td>
+<td>2.516350e+11</td>
+<td>2.225440e+11</td>
+<td>2.014420e+11</td>
+<td>1.776280e+11</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">otherCurrentLiab</td>
+<td>2.920800e+10</td>
+<td>2.800600e+10</td>
+<td>2.215900e+10</td>
+<td>1.761200e+10</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">totalAssets</td>
+<td>3.592680e+11</td>
+<td>3.196160e+11</td>
+<td>2.759090e+11</td>
+<td>2.327920e+11</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">commonStock</td>
+<td>6.177400e+10</td>
+<td>5.851000e+10</td>
+<td>5.055200e+10</td>
+<td>4.504900e+10</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">otherCurrentAssets</td>
+<td>7.054000e+09</td>
+<td>5.490000e+09</td>
+<td>4.412000e+09</td>
+<td>4.236000e+09</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">retainedEarnings</td>
+<td>1.914840e+11</td>
+<td>1.634010e+11</td>
+<td>1.521220e+11</td>
+<td>1.348850e+11</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">otherLiab</td>
+<td>1.717300e+10</td>
+<td>1.516000e+10</td>
+<td>1.447800e+10</td>
+<td>1.653200e+10</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">goodWill</td>
+<td>2.295600e+10</td>
+<td>2.117500e+10</td>
+<td>2.062400e+10</td>
+<td>1.788800e+10</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">treasuryStock</td>
+<td>-1.623000e+09</td>
+<td>6.330000e+08</td>
+<td>-1.232000e+09</td>
+<td>-2.306000e+09</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">otherAssets</td>
+<td>6.645000e+09</td>
+<td>5.037000e+09</td>
+<td>3.063000e+09</td>
+<td>3.430000e+09</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">cash</td>
+<td>2.094500e+10</td>
+<td>2.646500e+10</td>
+<td>1.849800e+10</td>
+<td>1.670100e+10</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">totalCurrentLiabilities</td>
+<td>6.425400e+10</td>
+<td>5.683400e+10</td>
+<td>4.522100e+10</td>
+<td>3.462000e+10</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">deferredLongTermAssetCharges</td>
+<td>1.284000e+09</td>
+<td>1.084000e+09</td>
+<td>7.210000e+08</td>
+<td>7.370000e+08</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">otherStockholderEquity</td>
+<td>-1.623000e+09</td>
+<td>6.330000e+08</td>
+<td>-1.232000e+09</td>
+<td>-2.306000e+09</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">propertyPlantEquipment</td>
+<td>1.105580e+11</td>
+<td>9.696000e+10</td>
+<td>8.458700e+10</td>
+<td>5.971900e+10</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">totalCurrentAssets</td>
+<td>1.881430e+11</td>
+<td>1.742960e+11</td>
+<td>1.525780e+11</td>
+<td>1.356760e+11</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">longTermInvestments</td>
+<td>2.954900e+10</td>
+<td>2.070300e+10</td>
+<td>1.307800e+10</td>
+<td>1.385900e+10</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">netTangibleAssets</td>
+<td>2.272620e+11</td>
+<td>1.999240e+11</td>
+<td>1.788390e+11</td>
+<td>1.575200e+11</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">shortTermInvestments</td>
+<td>1.187040e+11</td>
+<td>1.102290e+11</td>
+<td>1.011770e+11</td>
+<td>9.243900e+10</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">netReceivables</td>
+<td>4.027000e+10</td>
+<td>3.138400e+10</td>
+<td>2.749200e+10</td>
+<td>2.119300e+10</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">longTermDebt</td>
+<td>1.284400e+10</td>
+<td>1.283200e+10</td>
+<td>3.958000e+09</td>
+<td>3.950000e+09</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">inventory</td>
+<td>1.170000e+09</td>
+<td>7.280000e+08</td>
+<td>9.990000e+08</td>
+<td>1.107000e+09</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">accountsPayable</td>
+<td>6.037000e+09</td>
+<td>5.589000e+09</td>
+<td>5.561000e+09</td>
+<td>4.378000e+09</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">shortLongTermDebt</td>
+<td>NaN</td>
+<td>9.990000e+08</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>These are good. They have very similar data outputs to what we fed into PowerQuery, so we can make a similar datasheet with some manipulation.</p>
+</section>
+<section id="creating-fundamentals_querier" class="level1">
+<h1>Creating <code>fundamentals_querier()</code></h1>
+<p>I want a function that gets us to the same starting point as where Power Query leaves us - with the cashflow, balance sheet, and income statement of whatever desired company tickers we input.</p>
+<p>It needs to do several things:</p>
+<ol type="1">
+<li>Take a list of stock tickers</li>
+<li>For each ticker, query cashflow, balance sheet, and income statement</li>
+<li>Join each company’s reports together</li>
+<li>Concatenate these (with years matched) together for all companies queried</li>
+<li>Return this dataframe</li>
+</ol>
+<div class="cell" data-execution_count="107">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> datetime</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> fundamentals_querier(tickers):</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""_summary_</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="co">        tickers (list of strings): a list of the string tickers of desired companies</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># create the dictionary I'm associating the tickers and their fundamentals data in</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    fundamentals_dict <span class="op">=</span> {}</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># execute a set of operations for every individual `ticker` in the list `tickers` </span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> ticker <span class="kw">in</span> tickers:</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>        <span class="co"># query the three dataframes</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>        cash_flow <span class="op">=</span> si.get_cash_flow(ticker)</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>        balance_sheet <span class="op">=</span> si.get_balance_sheet(ticker)</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>        income_statement <span class="op">=</span> si.get_income_statement(ticker)</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>        <span class="co"># concatenate the above three</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>        ticker_fundamentals <span class="op">=</span> pd.concat([cash_flow, balance_sheet, income_statement])</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>        <span class="co"># change the long date columns to overall year columns</span></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>        ticker_fundamentals.columns <span class="op">=</span> pd.to_datetime(ticker_fundamentals.columns.values).year</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>        <span class="co"># assign name of the company to the data</span></span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>        ticker_fundamentals[<span class="st">"ticker"</span>] <span class="op">=</span> ticker</span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>        <span class="co"># add the ticker and fundamentals to the dictionary</span></span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>        fundamentals_dict[ticker] <span class="op">=</span> ticker_fundamentals</span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>    <span class="co"># create fundamentals_df, which is all the data from the different tickers, concatenated into one</span></span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>    fundamentals_df <span class="op">=</span> pd.concat(fundamentals_dict.values())</span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>    <span class="co"># return the fundamentals_df. not print(), since we want to do more with it later!</span></span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> fundamentals_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>If I wanted, I could just run the central block of code multiple times for every stock ticker to analyze, or keep it as a non-function For loop. But writing this up as a function lets us very easily do it multiple times, and I could import this function to other Python work and easily apply it there. So, building it as a function makes some sense.</p>
+</section>
+<section id="sample-case-checking-fundamentals-of-big-tech-companies" class="level1">
+<h1>Sample Case: Checking fundamentals of big tech companies</h1>
+<p>We’re going to do the same analysis here as we did in Excel. It’s going to also take some cleaning of the dataframe, but we’ll arrive in the same place!</p>
+<p>For no reason in particular, I decided to use a series of “big tech” companies as our sample. If you change the tickers input to <code>big_tech</code>, the entire notebook still runs through correctly, although some variable and plot names may no longer make much sense.</p>
+<div class="cell" data-execution_count="108">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># first we query our function above to get our data</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>big_tech <span class="op">=</span> fundamentals_querier([<span class="st">"aapl"</span>, <span class="st">"amzn"</span>, <span class="st">"goog"</span>, <span class="st">"msft"</span>, <span class="st">"meta"</span>])</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>big_tech</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="108">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">2022</th>
+<th data-quarto-table-cell-role="th">2021</th>
+<th data-quarto-table-cell-role="th">2020</th>
+<th data-quarto-table-cell-role="th">2019</th>
+<th data-quarto-table-cell-role="th">ticker</th>
+<th data-quarto-table-cell-role="th">2018</th>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Breakdown</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">investments</td>
+<td>-9560000000.0</td>
+<td>-3075000000.0</td>
+<td>5453000000.0</td>
+<td>58093000000.0</td>
+<td>aapl</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">changeToLiabilities</td>
+<td>9926000000.0</td>
+<td>14002000000.0</td>
+<td>-1981000000.0</td>
+<td>-2548000000.0</td>
+<td>aapl</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">totalCashflowsFromInvestingActivities</td>
+<td>-22354000000.0</td>
+<td>-14545000000.0</td>
+<td>-4289000000.0</td>
+<td>45896000000.0</td>
+<td>aapl</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">netBorrowings</td>
+<td>-123000000.0</td>
+<td>12665000000.0</td>
+<td>2499000000.0</td>
+<td>-7819000000.0</td>
+<td>aapl</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">totalCashFromFinancingActivities</td>
+<td>-110749000000.0</td>
+<td>-93353000000.0</td>
+<td>-86820000000.0</td>
+<td>-90976000000.0</td>
+<td>aapl</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">costOfRevenue</td>
+<td>NaN</td>
+<td>22649000000</td>
+<td>16692000000</td>
+<td>12770000000</td>
+<td>meta</td>
+<td>9355000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">totalOtherIncomeExpenseNet</td>
+<td>NaN</td>
+<td>531000000</td>
+<td>509000000</td>
+<td>-4174000000</td>
+<td>meta</td>
+<td>448000000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">discontinuedOperations</td>
+<td>NaN</td>
+<td>None</td>
+<td>None</td>
+<td>None</td>
+<td>meta</td>
+<td>None</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">netIncomeFromContinuingOps</td>
+<td>NaN</td>
+<td>39370000000</td>
+<td>29146000000</td>
+<td>18485000000</td>
+<td>meta</td>
+<td>22112000000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">netIncomeApplicableToCommonShares</td>
+<td>NaN</td>
+<td>39370000000</td>
+<td>29146000000</td>
+<td>18485000000</td>
+<td>meta</td>
+<td>22111000000</td>
+</tr>
+</tbody>
+</table>
+
+<p>323 rows × 6 columns</p>
+</div>
+</div>
+</div>
+</section>
+<section id="so-can-we-plot-our-data" class="level1">
+<h1>So can we plot our data?</h1>
+<p>We can’t plot anything useful, yet.</p>
+<p>In Pandas, you can very easily do operations on entire columns at once. We can add, subtract, multiply, and divide columns just like numbers in basic Python. <strong>This is important for our calculated fields.</strong></p>
+<p>For example;</p>
+<pre><code>df1["new_column"] = df1["column_a"]*df1["column_b"]</code></pre>
+<p>This creates <code>"new_column"</code> in <code>df1</code>, where each row is equal to that row’s <code>"column_a"</code> values multiplied by the row’s <code>"column_b"</code> value.</p>
+<p>For this to be useful, the columns must all be different variables, and their rows must be meaningfully related. Since we want to compute the financial variables for a company in a given year, we want each row to correspond to a given company in one year.</p>
+<p>Right now, <code>big_tech</code> has its variable names as a row variable, while the years and companies are columns. We need to do some work first.</p>
+</section>
+<section id="tidy-vs-untidy-data" class="level1">
+<h1>Tidy vs Untidy data</h1>
+<p>From <strong>R for Data Science</strong>:</p>
+<pre><code>There are three interrelated rules which make a dataset tidy:
+
+1. Each variable must have its own column.
+2. Each observation must have its own row.
+3. Each value must have its own cell.</code></pre>
+<p>At the end of the PowerQuery process, the data was tidy.</p>
+</section>
+<section id="visualization-of-tidy-data-rules" class="level1">
+<h1>Visualization of Tidy Data Rules</h1>
+<div class="cell" data-execution_count="109">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>Image(url<span class="op">=</span> <span class="st">"https://d33wubrfki0l68.cloudfront.net/6f1ddb544fc5c69a2478e444ab8112fb0eea23f8/91adc/images/tidy-1.png"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="109">
+<img src="https://d33wubrfki0l68.cloudfront.net/6f1ddb544fc5c69a2478e444ab8112fb0eea23f8/91adc/images/tidy-1.png">
+</div>
+</div>
+</section>
+<section id="why-is-tidy-data-good" class="level1">
+<h1>Why is Tidy Data good?</h1>
+<p>In tidy data there is a meaningful relation to values in the same column (they’re for the same variable) and values in the same row (they belong to the same observation).</p>
+<p>This means you can input a column to plot, or as a variable in a model, or apply an aggregation like finding the mean or variance.</p>
+<p>It also allows you to derive new values from your data by multiplying, dividing, adding, or subtracting column values from each other, like our calculated items in Excel.</p>
+</section>
+<section id="problems-with-big_tech" class="level1">
+<h1>Problems with <code>big_tech</code></h1>
+<p>There are two main ones, from a tidy data perspective.</p>
+<ol type="1">
+<li><p>The year variable is spread out across multiple columns.</p></li>
+<li><p>The different financial variables in the <code>Breakdown</code> column should be each their own column.</p></li>
+</ol>
+<p>Generating our calculated fields and plotting them will be a hassle at present. We’ll handle these problems in order.</p>
+</section>
+<section id="consolidating-years-into-one-variable" class="level1">
+<h1>Consolidating years into one variable</h1>
+<p>This table is in wide format - we’ve got multiple years of the same variable in each row.</p>
+<p>The Pandas <code>melt</code> function lets us specify fixed identifier variables. These are used to state things like entities (eg. which company is being observed), variable names, or other features that link the identity of observations. Then, the other columns get made into a new variable, which we specify the name of with the <code>var_name</code> argument.</p>
+<p>So in our case, we list <code>"ticker"</code> and <code>"Breakdown"</code> as our <code>id_vars</code>, and the new <code>var_name</code> as <code>"Year"</code>. Melt keeps the <code>"ticker"</code> and <code>"Breakdown"</code> columns, but each pair gets their year values turned into a separate row, with the corresponding variable value as the new <code>"value"</code> column.</p>
+<div class="cell" data-execution_count="110">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>big_tech_melt <span class="op">=</span> pd.melt(big_tech.reset_index(), id_vars <span class="op">=</span> [<span class="st">"ticker"</span>, <span class="st">"Breakdown"</span>], var_name <span class="op">=</span> <span class="st">"Year"</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>big_tech_melt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="110">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">ticker</th>
+<th data-quarto-table-cell-role="th">Breakdown</th>
+<th data-quarto-table-cell-role="th">Year</th>
+<th data-quarto-table-cell-role="th">value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>aapl</td>
+<td>investments</td>
+<td>2022</td>
+<td>-9560000000.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>aapl</td>
+<td>changeToLiabilities</td>
+<td>2022</td>
+<td>9926000000.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>aapl</td>
+<td>totalCashflowsFromInvestingActivities</td>
+<td>2022</td>
+<td>-22354000000.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>aapl</td>
+<td>netBorrowings</td>
+<td>2022</td>
+<td>-123000000.0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>aapl</td>
+<td>totalCashFromFinancingActivities</td>
+<td>2022</td>
+<td>-110749000000.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1610</td>
+<td>meta</td>
+<td>costOfRevenue</td>
+<td>2018</td>
+<td>9355000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1611</td>
+<td>meta</td>
+<td>totalOtherIncomeExpenseNet</td>
+<td>2018</td>
+<td>448000000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1612</td>
+<td>meta</td>
+<td>discontinuedOperations</td>
+<td>2018</td>
+<td>None</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1613</td>
+<td>meta</td>
+<td>netIncomeFromContinuingOps</td>
+<td>2018</td>
+<td>22112000000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1614</td>
+<td>meta</td>
+<td>netIncomeApplicableToCommonShares</td>
+<td>2018</td>
+<td>22111000000</td>
+</tr>
+</tbody>
+</table>
+
+<p>1615 rows × 4 columns</p>
+</div>
+</div>
+</div>
+<p>Before, Apple had one row for all its investment values, from 2018-2022. Now it has 5 rows for this variable, each corresponding to one year.</p>
+<p>This gets us halfway there - no variables are split along multiple columns. However, there are some observations (company-year releases) that are in multiple rows.</p>
+</section>
+<section id="splitting-breakdown-into-columns-to-complete-tidy-data-process" class="level1">
+<h1>Splitting <code>Breakdown</code> into columns to complete Tidy Data process</h1>
+<p>So now we’ve got an equivalent to the dataframe at the end of the PowerQuery operations. Each row is one company’s value of a certain variable (i.e.&nbsp;<code>Breakdown</code>) in a certain year.</p>
+<p>Next we want to complete the pivot table. We can’t set filters in the Pandas <code>pivot_table</code> function, but we actually swapped the <code>years</code> variable to the columns anyways when we did our analysis. So, this will work fine for what we need.</p>
+<div class="cell" data-execution_count="111">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>table_2_equiv <span class="op">=</span> pd.pivot_table(big_tech_melt, values <span class="op">=</span> <span class="st">"value"</span>, columns <span class="op">=</span> <span class="st">"Breakdown"</span>, index <span class="op">=</span> [<span class="st">"ticker"</span>, <span class="st">"Year"</span>], aggfunc <span class="op">=</span> np.<span class="bu">sum</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>table_2_equiv</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="111">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Breakdown</th>
+<th data-quarto-table-cell-role="th">accountsPayable</th>
+<th data-quarto-table-cell-role="th">capitalExpenditures</th>
+<th data-quarto-table-cell-role="th">capitalSurplus</th>
+<th data-quarto-table-cell-role="th">cash</th>
+<th data-quarto-table-cell-role="th">changeInCash</th>
+<th data-quarto-table-cell-role="th">changeToAccountReceivables</th>
+<th data-quarto-table-cell-role="th">changeToInventory</th>
+<th data-quarto-table-cell-role="th">changeToLiabilities</th>
+<th data-quarto-table-cell-role="th">changeToNetincome</th>
+<th data-quarto-table-cell-role="th">changeToOperatingActivities</th>
+<th data-quarto-table-cell-role="th">commonStock</th>
+<th data-quarto-table-cell-role="th">costOfRevenue</th>
+<th data-quarto-table-cell-role="th">deferredLongTermAssetCharges</th>
+<th data-quarto-table-cell-role="th">depreciation</th>
+<th data-quarto-table-cell-role="th">discontinuedOperations</th>
+<th data-quarto-table-cell-role="th">dividendsPaid</th>
+<th data-quarto-table-cell-role="th">ebit</th>
+<th data-quarto-table-cell-role="th">effectOfAccountingCharges</th>
+<th data-quarto-table-cell-role="th">effectOfExchangeRate</th>
+<th data-quarto-table-cell-role="th">extraordinaryItems</th>
+<th data-quarto-table-cell-role="th">goodWill</th>
+<th data-quarto-table-cell-role="th">grossProfit</th>
+<th data-quarto-table-cell-role="th">incomeBeforeTax</th>
+<th data-quarto-table-cell-role="th">incomeTaxExpense</th>
+<th data-quarto-table-cell-role="th">intangibleAssets</th>
+<th data-quarto-table-cell-role="th">interestExpense</th>
+<th data-quarto-table-cell-role="th">inventory</th>
+<th data-quarto-table-cell-role="th">investments</th>
+<th data-quarto-table-cell-role="th">issuanceOfStock</th>
+<th data-quarto-table-cell-role="th">longTermDebt</th>
+<th data-quarto-table-cell-role="th">longTermInvestments</th>
+<th data-quarto-table-cell-role="th">minorityInterest</th>
+<th data-quarto-table-cell-role="th">netBorrowings</th>
+<th data-quarto-table-cell-role="th">netIncome</th>
+<th data-quarto-table-cell-role="th">netIncomeApplicableToCommonShares</th>
+<th data-quarto-table-cell-role="th">netIncomeFromContinuingOps</th>
+<th data-quarto-table-cell-role="th">netReceivables</th>
+<th data-quarto-table-cell-role="th">netTangibleAssets</th>
+<th data-quarto-table-cell-role="th">nonRecurring</th>
+<th data-quarto-table-cell-role="th">operatingIncome</th>
+<th data-quarto-table-cell-role="th">otherAssets</th>
+<th data-quarto-table-cell-role="th">otherCashflowsFromFinancingActivities</th>
+<th data-quarto-table-cell-role="th">otherCashflowsFromInvestingActivities</th>
+<th data-quarto-table-cell-role="th">otherCurrentAssets</th>
+<th data-quarto-table-cell-role="th">otherCurrentLiab</th>
+<th data-quarto-table-cell-role="th">otherItems</th>
+<th data-quarto-table-cell-role="th">otherLiab</th>
+<th data-quarto-table-cell-role="th">otherOperatingExpenses</th>
+<th data-quarto-table-cell-role="th">otherStockholderEquity</th>
+<th data-quarto-table-cell-role="th">propertyPlantEquipment</th>
+<th data-quarto-table-cell-role="th">repurchaseOfStock</th>
+<th data-quarto-table-cell-role="th">researchDevelopment</th>
+<th data-quarto-table-cell-role="th">retainedEarnings</th>
+<th data-quarto-table-cell-role="th">sellingGeneralAdministrative</th>
+<th data-quarto-table-cell-role="th">shortLongTermDebt</th>
+<th data-quarto-table-cell-role="th">shortTermInvestments</th>
+<th data-quarto-table-cell-role="th">totalAssets</th>
+<th data-quarto-table-cell-role="th">totalCashFromFinancingActivities</th>
+<th data-quarto-table-cell-role="th">totalCashFromOperatingActivities</th>
+<th data-quarto-table-cell-role="th">totalCashflowsFromInvestingActivities</th>
+<th data-quarto-table-cell-role="th">totalCurrentAssets</th>
+<th data-quarto-table-cell-role="th">totalCurrentLiabilities</th>
+<th data-quarto-table-cell-role="th">totalLiab</th>
+<th data-quarto-table-cell-role="th">totalOperatingExpenses</th>
+<th data-quarto-table-cell-role="th">totalOtherIncomeExpenseNet</th>
+<th data-quarto-table-cell-role="th">totalRevenue</th>
+<th data-quarto-table-cell-role="th">totalStockholderEquity</th>
+<th data-quarto-table-cell-role="th">treasuryStock</th>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">ticker</th>
+<th data-quarto-table-cell-role="th">Year</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td rowspan="5" data-quarto-table-cell-role="th" data-valign="top">aapl</td>
+<td data-quarto-table-cell-role="th">2018</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>NaN</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>NaN</td>
+<td>0.000000e+00</td>
+<td>0.0</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>NaN</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.0</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.0</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.0</td>
+<td>0.000000e+00</td>
+<td>0.0</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2019</td>
+<td>4.623600e+10</td>
+<td>-1.049500e+10</td>
+<td>NaN</td>
+<td>4.884400e+10</td>
+<td>2.431100e+10</td>
+<td>2.450000e+08</td>
+<td>-2.890000e+08</td>
+<td>-2.548000e+09</td>
+<td>5.076000e+09</td>
+<td>-8.960000e+08</td>
+<td>4.517400e+10</td>
+<td>1.617820e+11</td>
+<td>NaN</td>
+<td>1.254700e+10</td>
+<td>0.0</td>
+<td>-1.411900e+10</td>
+<td>6.393000e+10</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>9.839200e+10</td>
+<td>6.573700e+10</td>
+<td>1.048100e+10</td>
+<td>NaN</td>
+<td>-3.576000e+09</td>
+<td>4.106000e+09</td>
+<td>5.809300e+10</td>
+<td>7.810000e+08</td>
+<td>9.180700e+10</td>
+<td>1.053410e+11</td>
+<td>0.0</td>
+<td>-7.819000e+09</td>
+<td>1.105120e+11</td>
+<td>5.525600e+10</td>
+<td>5.525600e+10</td>
+<td>4.580400e+10</td>
+<td>9.048800e+10</td>
+<td>0.0</td>
+<td>6.393000e+10</td>
+<td>3.297800e+10</td>
+<td>-1.050000e+08</td>
+<td>-1.078000e+09</td>
+<td>1.235200e+10</td>
+<td>4.324200e+10</td>
+<td>0.0</td>
+<td>5.050300e+10</td>
+<td>0.0</td>
+<td>-5.840000e+08</td>
+<td>3.737800e+10</td>
+<td>-6.971400e+10</td>
+<td>1.621700e+10</td>
+<td>4.589800e+10</td>
+<td>1.824500e+10</td>
+<td>1.026000e+10</td>
+<td>5.171300e+10</td>
+<td>3.385160e+11</td>
+<td>-9.097600e+10</td>
+<td>6.939100e+10</td>
+<td>4.589600e+10</td>
+<td>1.628190e+11</td>
+<td>1.057180e+11</td>
+<td>2.480280e+11</td>
+<td>1.962440e+11</td>
+<td>1.807000e+09</td>
+<td>2.601740e+11</td>
+<td>9.048800e+10</td>
+<td>-5.840000e+08</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2020</td>
+<td>4.229600e+10</td>
+<td>-7.309000e+09</td>
+<td>NaN</td>
+<td>3.801600e+10</td>
+<td>-1.043500e+10</td>
+<td>6.917000e+09</td>
+<td>-1.270000e+08</td>
+<td>-1.981000e+09</td>
+<td>6.517000e+09</td>
+<td>8.810000e+08</td>
+<td>5.077900e+10</td>
+<td>1.695590e+11</td>
+<td>NaN</td>
+<td>1.105600e+10</td>
+<td>0.0</td>
+<td>-1.408100e+10</td>
+<td>6.628800e+10</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>1.049560e+11</td>
+<td>6.709100e+10</td>
+<td>9.680000e+09</td>
+<td>NaN</td>
+<td>-2.873000e+09</td>
+<td>4.061000e+09</td>
+<td>5.453000e+09</td>
+<td>0.000000e+00</td>
+<td>9.866700e+10</td>
+<td>1.008870e+11</td>
+<td>0.0</td>
+<td>2.499000e+09</td>
+<td>1.148220e+11</td>
+<td>5.741100e+10</td>
+<td>5.741100e+10</td>
+<td>3.744500e+10</td>
+<td>6.533900e+10</td>
+<td>0.0</td>
+<td>6.628800e+10</td>
+<td>3.395200e+10</td>
+<td>7.540000e+08</td>
+<td>-9.090000e+08</td>
+<td>1.126400e+10</td>
+<td>4.786700e+10</td>
+<td>0.0</td>
+<td>4.610800e+10</td>
+<td>0.0</td>
+<td>-4.060000e+08</td>
+<td>4.533600e+10</td>
+<td>-7.599200e+10</td>
+<td>1.875200e+10</td>
+<td>1.496600e+10</td>
+<td>1.991600e+10</td>
+<td>8.773000e+09</td>
+<td>5.292700e+10</td>
+<td>3.238880e+11</td>
+<td>-8.682000e+10</td>
+<td>8.067400e+10</td>
+<td>-4.289000e+09</td>
+<td>1.437130e+11</td>
+<td>1.053920e+11</td>
+<td>2.585490e+11</td>
+<td>2.082270e+11</td>
+<td>8.030000e+08</td>
+<td>2.745150e+11</td>
+<td>6.533900e+10</td>
+<td>-4.060000e+08</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2021</td>
+<td>5.476300e+10</td>
+<td>-1.108500e+10</td>
+<td>NaN</td>
+<td>3.494000e+10</td>
+<td>-3.860000e+09</td>
+<td>-1.012500e+10</td>
+<td>-2.642000e+09</td>
+<td>1.400200e+10</td>
+<td>2.985000e+09</td>
+<td>-6.146000e+09</td>
+<td>5.736500e+10</td>
+<td>2.129810e+11</td>
+<td>NaN</td>
+<td>1.128400e+10</td>
+<td>0.0</td>
+<td>-1.446700e+10</td>
+<td>1.089490e+11</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>1.528360e+11</td>
+<td>1.092070e+11</td>
+<td>1.452700e+10</td>
+<td>NaN</td>
+<td>-2.645000e+09</td>
+<td>6.580000e+09</td>
+<td>-3.075000e+09</td>
+<td>0.000000e+00</td>
+<td>1.091060e+11</td>
+<td>1.278770e+11</td>
+<td>0.0</td>
+<td>1.266500e+10</td>
+<td>1.893600e+11</td>
+<td>9.468000e+10</td>
+<td>9.468000e+10</td>
+<td>5.150600e+10</td>
+<td>6.309000e+10</td>
+<td>0.0</td>
+<td>1.089490e+11</td>
+<td>3.876200e+10</td>
+<td>9.760000e+08</td>
+<td>-3.520000e+08</td>
+<td>1.411100e+10</td>
+<td>5.357700e+10</td>
+<td>0.0</td>
+<td>4.305000e+10</td>
+<td>0.0</td>
+<td>1.630000e+08</td>
+<td>4.952700e+10</td>
+<td>-9.252700e+10</td>
+<td>2.191400e+10</td>
+<td>5.562000e+09</td>
+<td>2.197300e+10</td>
+<td>9.613000e+09</td>
+<td>2.769900e+10</td>
+<td>3.510020e+11</td>
+<td>-9.335300e+10</td>
+<td>1.040380e+11</td>
+<td>-1.454500e+10</td>
+<td>1.348360e+11</td>
+<td>1.254810e+11</td>
+<td>2.879120e+11</td>
+<td>2.568680e+11</td>
+<td>2.580000e+08</td>
+<td>3.658170e+11</td>
+<td>6.309000e+10</td>
+<td>1.630000e+08</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2022</td>
+<td>6.411500e+10</td>
+<td>-1.070800e+10</td>
+<td>NaN</td>
+<td>2.364600e+10</td>
+<td>-1.095200e+10</td>
+<td>-1.823000e+09</td>
+<td>1.484000e+09</td>
+<td>9.926000e+09</td>
+<td>1.004400e+10</td>
+<td>-8.387000e+09</td>
+<td>6.484900e+10</td>
+<td>2.235460e+11</td>
+<td>NaN</td>
+<td>1.110400e+10</td>
+<td>0.0</td>
+<td>-1.484100e+10</td>
+<td>1.194370e+11</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>1.707820e+11</td>
+<td>1.191030e+11</td>
+<td>1.930000e+10</td>
+<td>NaN</td>
+<td>-2.931000e+09</td>
+<td>4.946000e+09</td>
+<td>-9.560000e+09</td>
+<td>0.000000e+00</td>
+<td>9.895900e+10</td>
+<td>1.208050e+11</td>
+<td>0.0</td>
+<td>-1.230000e+08</td>
+<td>1.996060e+11</td>
+<td>9.980300e+10</td>
+<td>9.980300e+10</td>
+<td>6.093200e+10</td>
+<td>5.067200e+10</td>
+<td>0.0</td>
+<td>1.194370e+11</td>
+<td>4.401100e+10</td>
+<td>-1.600000e+08</td>
+<td>-1.780000e+09</td>
+<td>2.122300e+10</td>
+<td>6.709400e+10</td>
+<td>0.0</td>
+<td>3.839400e+10</td>
+<td>0.0</td>
+<td>-1.110900e+10</td>
+<td>5.253400e+10</td>
+<td>-9.562500e+10</td>
+<td>2.625100e+10</td>
+<td>-3.068000e+09</td>
+<td>2.509400e+10</td>
+<td>1.112800e+10</td>
+<td>2.465800e+10</td>
+<td>3.527550e+11</td>
+<td>-1.107490e+11</td>
+<td>1.221510e+11</td>
+<td>-2.235400e+10</td>
+<td>1.354050e+11</td>
+<td>1.539820e+11</td>
+<td>3.020830e+11</td>
+<td>2.748910e+11</td>
+<td>-3.340000e+08</td>
+<td>3.943280e+11</td>
+<td>5.067200e+10</td>
+<td>-1.110900e+10</td>
+</tr>
+<tr class="even">
+<td rowspan="5" data-quarto-table-cell-role="th" data-valign="top">amzn</td>
+<td data-quarto-table-cell-role="th">2018</td>
+<td>3.819200e+10</td>
+<td>-1.342700e+10</td>
+<td>2.679100e+10</td>
+<td>3.175000e+10</td>
+<td>1.031700e+10</td>
+<td>-4.615000e+09</td>
+<td>-1.314000e+09</td>
+<td>4.414000e+09</td>
+<td>6.352000e+09</td>
+<td>4.720000e+08</td>
+<td>5.000000e+06</td>
+<td>1.391560e+11</td>
+<td>NaN</td>
+<td>1.534100e+10</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>1.242100e+10</td>
+<td>0.0</td>
+<td>-351000000.0</td>
+<td>0.0</td>
+<td>1.454800e+10</td>
+<td>9.373100e+10</td>
+<td>1.127000e+10</td>
+<td>1.197000e+09</td>
+<td>4.110000e+09</td>
+<td>-1.417000e+09</td>
+<td>1.717400e+10</td>
+<td>1.140000e+09</td>
+<td>NaN</td>
+<td>2.349500e+10</td>
+<td>7.220000e+08</td>
+<td>0.0</td>
+<td>-7.686000e+09</td>
+<td>2.014600e+10</td>
+<td>1.007300e+10</td>
+<td>1.007300e+10</td>
+<td>1.625900e+10</td>
+<td>2.489100e+10</td>
+<td>0.0</td>
+<td>1.242100e+10</td>
+<td>6.370000e+09</td>
+<td>NaN</td>
+<td>2.104000e+09</td>
+<td>4.180000e+08</td>
+<td>9.959000e+09</td>
+<td>0.0</td>
+<td>1.756300e+10</td>
+<td>296000000.0</td>
+<td>-1.035000e+09</td>
+<td>6.179700e+10</td>
+<td>NaN</td>
+<td>2.883700e+10</td>
+<td>1.962500e+10</td>
+<td>5.217700e+10</td>
+<td>1.371000e+09</td>
+<td>9.500000e+09</td>
+<td>1.626480e+11</td>
+<td>-7.686000e+09</td>
+<td>3.072300e+10</td>
+<td>-1.236900e+10</td>
+<td>7.510100e+10</td>
+<td>6.839100e+10</td>
+<td>1.190990e+11</td>
+<td>2.204660e+11</td>
+<td>-1.151000e+09</td>
+<td>2.328870e+11</td>
+<td>4.354900e+10</td>
+<td>-2.872000e+09</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2019</td>
+<td>4.718300e+10</td>
+<td>-1.686100e+10</td>
+<td>3.365800e+10</td>
+<td>3.609200e+10</td>
+<td>4.237000e+09</td>
+<td>-7.681000e+09</td>
+<td>-3.278000e+09</td>
+<td>9.904000e+09</td>
+<td>7.575000e+09</td>
+<td>-1.383000e+09</td>
+<td>5.000000e+06</td>
+<td>1.655360e+11</td>
+<td>NaN</td>
+<td>2.178900e+10</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>1.454100e+10</td>
+<td>0.0</td>
+<td>70000000.0</td>
+<td>0.0</td>
+<td>1.475400e+10</td>
+<td>1.149860e+11</td>
+<td>1.396200e+10</td>
+<td>2.374000e+09</td>
+<td>4.049000e+09</td>
+<td>-1.600000e+09</td>
+<td>2.049700e+10</td>
+<td>-9.131000e+09</td>
+<td>NaN</td>
+<td>2.341400e+10</td>
+<td>2.169000e+09</td>
+<td>0.0</td>
+<td>-1.006600e+10</td>
+<td>2.317600e+10</td>
+<td>1.158800e+10</td>
+<td>1.158800e+10</td>
+<td>2.054000e+10</td>
+<td>4.325700e+10</td>
+<td>0.0</td>
+<td>1.454100e+10</td>
+<td>1.009600e+10</td>
+<td>NaN</td>
+<td>0.000000e+00</td>
+<td>2.760000e+08</td>
+<td>1.220200e+10</td>
+<td>0.0</td>
+<td>1.217100e+10</td>
+<td>201000000.0</td>
+<td>-9.860000e+08</td>
+<td>9.784600e+10</td>
+<td>NaN</td>
+<td>3.593100e+10</td>
+<td>3.122000e+10</td>
+<td>6.431300e+10</td>
+<td>1.305000e+09</td>
+<td>1.892900e+10</td>
+<td>2.252480e+11</td>
+<td>-1.006600e+10</td>
+<td>3.851400e+10</td>
+<td>-2.428100e+10</td>
+<td>9.633400e+10</td>
+<td>8.781200e+10</td>
+<td>1.631880e+11</td>
+<td>2.659810e+11</td>
+<td>-5.790000e+08</td>
+<td>2.805220e+11</td>
+<td>6.206000e+10</td>
+<td>-2.823000e+09</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2020</td>
+<td>7.253900e+10</td>
+<td>-4.014000e+10</td>
+<td>4.286500e+10</td>
+<td>4.212200e+10</td>
+<td>5.967000e+09</td>
+<td>-8.169000e+09</td>
+<td>-2.849000e+09</td>
+<td>1.874500e+10</td>
+<td>6.001000e+09</td>
+<td>5.754000e+09</td>
+<td>5.000000e+06</td>
+<td>2.333070e+11</td>
+<td>NaN</td>
+<td>2.525100e+10</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>2.289900e+10</td>
+<td>0.0</td>
+<td>618000000.0</td>
+<td>0.0</td>
+<td>1.501700e+10</td>
+<td>1.527570e+11</td>
+<td>2.419400e+10</td>
+<td>2.863000e+09</td>
+<td>4.981000e+09</td>
+<td>-1.647000e+09</td>
+<td>2.379500e+10</td>
+<td>-2.224200e+10</td>
+<td>NaN</td>
+<td>3.521600e+10</td>
+<td>5.700000e+09</td>
+<td>0.0</td>
+<td>-1.104000e+09</td>
+<td>4.266200e+10</td>
+<td>2.133100e+10</td>
+<td>2.133100e+10</td>
+<td>2.430900e+10</td>
+<td>7.340600e+10</td>
+<td>0.0</td>
+<td>2.289900e+10</td>
+<td>1.209700e+10</td>
+<td>NaN</td>
+<td>0.000000e+00</td>
+<td>2.330000e+08</td>
+<td>1.526700e+10</td>
+<td>0.0</td>
+<td>1.361700e+10</td>
+<td>-75000000.0</td>
+<td>-1.800000e+08</td>
+<td>1.506670e+11</td>
+<td>NaN</td>
+<td>4.274000e+10</td>
+<td>5.255100e+10</td>
+<td>8.719300e+10</td>
+<td>1.266000e+09</td>
+<td>4.227400e+10</td>
+<td>3.211950e+11</td>
+<td>-1.104000e+09</td>
+<td>6.606400e+10</td>
+<td>-5.961100e+10</td>
+<td>1.327330e+11</td>
+<td>1.263850e+11</td>
+<td>2.277910e+11</td>
+<td>3.631650e+11</td>
+<td>1.295000e+09</td>
+<td>3.860640e+11</td>
+<td>9.340400e+10</td>
+<td>-2.017000e+09</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2021</td>
+<td>7.866400e+10</td>
+<td>-6.105300e+10</td>
+<td>5.553800e+10</td>
+<td>3.622000e+10</td>
+<td>-5.900000e+09</td>
+<td>-1.816300e+10</td>
+<td>-9.487000e+09</td>
+<td>5.916000e+09</td>
+<td>-1.722000e+09</td>
+<td>2.123000e+09</td>
+<td>5.000000e+06</td>
+<td>2.723440e+11</td>
+<td>NaN</td>
+<td>3.429600e+10</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>2.487900e+10</td>
+<td>0.0</td>
+<td>-364000000.0</td>
+<td>0.0</td>
+<td>1.537100e+10</td>
+<td>1.974780e+11</td>
+<td>3.815500e+10</td>
+<td>4.791000e+09</td>
+<td>5.107000e+09</td>
+<td>-1.809000e+09</td>
+<td>3.264000e+10</td>
+<td>-7.730000e+08</td>
+<td>NaN</td>
+<td>5.494400e+10</td>
+<td>4.003000e+09</td>
+<td>0.0</td>
+<td>6.291000e+09</td>
+<td>6.672800e+10</td>
+<td>3.336400e+10</td>
+<td>3.336400e+10</td>
+<td>3.264900e+10</td>
+<td>1.177670e+11</td>
+<td>0.0</td>
+<td>2.487900e+10</td>
+<td>1.812500e+10</td>
+<td>NaN</td>
+<td>0.000000e+00</td>
+<td>2.420000e+08</td>
+<td>1.802700e+10</td>
+<td>0.0</td>
+<td>1.744300e+10</td>
+<td>62000000.0</td>
+<td>-1.376000e+09</td>
+<td>2.163630e+11</td>
+<td>NaN</td>
+<td>5.605200e+10</td>
+<td>8.591500e+10</td>
+<td>1.164850e+11</td>
+<td>1.687000e+09</td>
+<td>5.982900e+10</td>
+<td>4.205490e+11</td>
+<td>6.291000e+09</td>
+<td>4.632700e+10</td>
+<td>-5.815400e+10</td>
+<td>1.615800e+11</td>
+<td>1.422660e+11</td>
+<td>2.823040e+11</td>
+<td>4.449430e+11</td>
+<td>1.327600e+10</td>
+<td>4.698220e+11</td>
+<td>1.382450e+11</td>
+<td>-3.213000e+09</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2022</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>NaN</td>
+<td>0.000000e+00</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>0.000000e+00</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>NaN</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.0</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.0</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>NaN</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.0</td>
+<td>0.000000e+00</td>
+<td>0.0</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>NaN</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+</tr>
+<tr class="odd">
+<td rowspan="5" data-quarto-table-cell-role="th" data-valign="top">goog</td>
+<td data-quarto-table-cell-role="th">2018</td>
+<td>4.378000e+09</td>
+<td>-2.513900e+10</td>
+<td>NaN</td>
+<td>1.670100e+10</td>
+<td>5.986000e+09</td>
+<td>-2.169000e+09</td>
+<td>NaN</td>
+<td>1.438000e+09</td>
+<td>3.298000e+09</td>
+<td>7.890000e+09</td>
+<td>4.504900e+10</td>
+<td>5.954900e+10</td>
+<td>7.370000e+08</td>
+<td>9.029000e+09</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>3.259500e+10</td>
+<td>0.0</td>
+<td>-302000000.0</td>
+<td>0.0</td>
+<td>1.788800e+10</td>
+<td>7.727000e+10</td>
+<td>3.491300e+10</td>
+<td>4.177000e+09</td>
+<td>2.220000e+09</td>
+<td>-1.140000e+08</td>
+<td>1.107000e+09</td>
+<td>-1.972000e+09</td>
+<td>NaN</td>
+<td>3.950000e+09</td>
+<td>1.385900e+10</td>
+<td>0.0</td>
+<td>-6.100000e+07</td>
+<td>6.147200e+10</td>
+<td>3.073600e+10</td>
+<td>3.073600e+10</td>
+<td>2.119300e+10</td>
+<td>1.575200e+11</td>
+<td>0.0</td>
+<td>3.259500e+10</td>
+<td>3.430000e+09</td>
+<td>-4.043000e+09</td>
+<td>9.800000e+07</td>
+<td>4.236000e+09</td>
+<td>1.761200e+10</td>
+<td>0.0</td>
+<td>1.653200e+10</td>
+<td>0.0</td>
+<td>-2.306000e+09</td>
+<td>5.971900e+10</td>
+<td>-9.075000e+09</td>
+<td>2.141900e+10</td>
+<td>1.348850e+11</td>
+<td>2.325600e+10</td>
+<td>0.000000e+00</td>
+<td>9.243900e+10</td>
+<td>2.327920e+11</td>
+<td>-1.317900e+10</td>
+<td>4.797100e+10</td>
+<td>-2.850400e+10</td>
+<td>1.356760e+11</td>
+<td>3.462000e+10</td>
+<td>5.516400e+10</td>
+<td>1.042240e+11</td>
+<td>2.318000e+09</td>
+<td>1.368190e+11</td>
+<td>1.776280e+11</td>
+<td>-2.306000e+09</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2019</td>
+<td>5.561000e+09</td>
+<td>-2.354800e+10</td>
+<td>NaN</td>
+<td>1.849800e+10</td>
+<td>1.797000e+09</td>
+<td>-4.340000e+09</td>
+<td>NaN</td>
+<td>4.650000e+08</td>
+<td>7.707000e+09</td>
+<td>7.822000e+09</td>
+<td>5.055200e+10</td>
+<td>7.189600e+10</td>
+<td>7.210000e+08</td>
+<td>1.165100e+10</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>3.592800e+10</td>
+<td>0.0</td>
+<td>-23000000.0</td>
+<td>0.0</td>
+<td>2.062400e+10</td>
+<td>8.996100e+10</td>
+<td>3.962500e+10</td>
+<td>5.282000e+09</td>
+<td>1.979000e+09</td>
+<td>-1.000000e+08</td>
+<td>9.990000e+08</td>
+<td>-4.017000e+09</td>
+<td>NaN</td>
+<td>3.958000e+09</td>
+<td>1.307800e+10</td>
+<td>0.0</td>
+<td>-2.680000e+08</td>
+<td>6.868600e+10</td>
+<td>3.434300e+10</td>
+<td>3.434300e+10</td>
+<td>2.749200e+10</td>
+<td>1.788390e+11</td>
+<td>0.0</td>
+<td>3.592800e+10</td>
+<td>3.063000e+09</td>
+<td>-4.545000e+09</td>
+<td>5.890000e+08</td>
+<td>4.412000e+09</td>
+<td>2.215900e+10</td>
+<td>0.0</td>
+<td>1.447800e+10</td>
+<td>0.0</td>
+<td>-1.232000e+09</td>
+<td>8.458700e+10</td>
+<td>-1.839600e+10</td>
+<td>2.601800e+10</td>
+<td>1.521220e+11</td>
+<td>2.801500e+10</td>
+<td>0.000000e+00</td>
+<td>1.011770e+11</td>
+<td>2.759090e+11</td>
+<td>-2.320900e+10</td>
+<td>5.452000e+10</td>
+<td>-2.949100e+10</td>
+<td>1.525780e+11</td>
+<td>4.522100e+10</td>
+<td>7.446700e+10</td>
+<td>1.259290e+11</td>
+<td>3.697000e+09</td>
+<td>1.618570e+11</td>
+<td>2.014420e+11</td>
+<td>-1.232000e+09</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2020</td>
+<td>5.589000e+09</td>
+<td>-2.228100e+10</td>
+<td>NaN</td>
+<td>2.646500e+10</td>
+<td>7.967000e+09</td>
+<td>-6.524000e+09</td>
+<td>NaN</td>
+<td>1.329000e+09</td>
+<td>9.349000e+09</td>
+<td>5.813000e+09</td>
+<td>5.851000e+10</td>
+<td>8.473200e+10</td>
+<td>1.084000e+09</td>
+<td>1.367900e+10</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>4.122400e+10</td>
+<td>0.0</td>
+<td>24000000.0</td>
+<td>0.0</td>
+<td>2.117500e+10</td>
+<td>9.779500e+10</td>
+<td>4.808200e+10</td>
+<td>7.813000e+09</td>
+<td>1.445000e+09</td>
+<td>-1.350000e+08</td>
+<td>7.280000e+08</td>
+<td>-9.822000e+09</td>
+<td>NaN</td>
+<td>1.283200e+10</td>
+<td>2.070300e+10</td>
+<td>0.0</td>
+<td>9.661000e+09</td>
+<td>8.053800e+10</td>
+<td>4.026900e+10</td>
+<td>4.026900e+10</td>
+<td>3.138400e+10</td>
+<td>1.999240e+11</td>
+<td>0.0</td>
+<td>4.122400e+10</td>
+<td>5.037000e+09</td>
+<td>-2.920000e+09</td>
+<td>6.800000e+07</td>
+<td>5.490000e+09</td>
+<td>2.800600e+10</td>
+<td>0.0</td>
+<td>1.516000e+10</td>
+<td>0.0</td>
+<td>6.330000e+08</td>
+<td>9.696000e+10</td>
+<td>-3.114900e+10</td>
+<td>2.757300e+10</td>
+<td>1.634010e+11</td>
+<td>2.899800e+10</td>
+<td>9.990000e+08</td>
+<td>1.102290e+11</td>
+<td>3.196160e+11</td>
+<td>-2.440800e+10</td>
+<td>6.512400e+10</td>
+<td>-3.277300e+10</td>
+<td>1.742960e+11</td>
+<td>5.683400e+10</td>
+<td>9.707200e+10</td>
+<td>1.413030e+11</td>
+<td>6.858000e+09</td>
+<td>1.825270e+11</td>
+<td>2.225440e+11</td>
+<td>6.330000e+08</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2021</td>
+<td>6.037000e+09</td>
+<td>-2.464000e+10</td>
+<td>NaN</td>
+<td>2.094500e+10</td>
+<td>-5.520000e+09</td>
+<td>-9.095000e+09</td>
+<td>NaN</td>
+<td>1.057000e+09</td>
+<td>4.712000e+09</td>
+<td>7.140000e+09</td>
+<td>6.177400e+10</td>
+<td>1.109390e+11</td>
+<td>1.284000e+09</td>
+<td>1.243000e+10</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>7.871400e+10</td>
+<td>0.0</td>
+<td>-287000000.0</td>
+<td>0.0</td>
+<td>2.295600e+10</td>
+<td>1.466980e+11</td>
+<td>9.073400e+10</td>
+<td>1.470100e+10</td>
+<td>1.417000e+09</td>
+<td>-3.460000e+08</td>
+<td>1.170000e+09</td>
+<td>-8.806000e+09</td>
+<td>NaN</td>
+<td>1.284400e+10</td>
+<td>2.954900e+10</td>
+<td>0.0</td>
+<td>-1.236000e+09</td>
+<td>1.520660e+11</td>
+<td>7.603300e+10</td>
+<td>7.603300e+10</td>
+<td>4.027000e+10</td>
+<td>2.272620e+11</td>
+<td>0.0</td>
+<td>7.871400e+10</td>
+<td>6.645000e+09</td>
+<td>-9.852000e+09</td>
+<td>5.410000e+08</td>
+<td>7.054000e+09</td>
+<td>2.920800e+10</td>
+<td>0.0</td>
+<td>1.717300e+10</td>
+<td>0.0</td>
+<td>-1.623000e+09</td>
+<td>1.105580e+11</td>
+<td>-5.027400e+10</td>
+<td>3.156200e+10</td>
+<td>1.914840e+11</td>
+<td>3.642200e+10</td>
+<td>0.000000e+00</td>
+<td>1.187040e+11</td>
+<td>3.592680e+11</td>
+<td>-6.136200e+10</td>
+<td>9.165200e+10</td>
+<td>-3.552300e+10</td>
+<td>1.881430e+11</td>
+<td>6.425400e+10</td>
+<td>1.076330e+11</td>
+<td>1.789230e+11</td>
+<td>1.202000e+10</td>
+<td>2.576370e+11</td>
+<td>2.516350e+11</td>
+<td>-1.623000e+09</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2022</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>NaN</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>NaN</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>0.000000e+00</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>NaN</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.0</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.0</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.0</td>
+<td>0.000000e+00</td>
+<td>0.0</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+</tr>
+<tr class="even">
+<td rowspan="5" data-quarto-table-cell-role="th" data-valign="top">meta</td>
+<td data-quarto-table-cell-role="th">2018</td>
+<td>8.200000e+08</td>
+<td>-1.391500e+10</td>
+<td>4.290600e+10</td>
+<td>1.001900e+10</td>
+<td>1.920000e+09</td>
+<td>-1.892000e+09</td>
+<td>NaN</td>
+<td>2.740000e+08</td>
+<td>4.374000e+09</td>
+<td>9.100000e+07</td>
+<td>4.290600e+10</td>
+<td>9.355000e+09</td>
+<td>NaN</td>
+<td>4.315000e+09</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>2.491300e+10</td>
+<td>0.0</td>
+<td>-179000000.0</td>
+<td>0.0</td>
+<td>1.830100e+10</td>
+<td>4.648300e+10</td>
+<td>2.536100e+10</td>
+<td>3.249000e+09</td>
+<td>1.294000e+09</td>
+<td>0.000000e+00</td>
+<td>NaN</td>
+<td>2.449000e+09</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>0.000000e+00</td>
+<td>0.0</td>
+<td>5.000000e+08</td>
+<td>4.422400e+10</td>
+<td>2.211100e+10</td>
+<td>2.211200e+10</td>
+<td>7.587000e+09</td>
+<td>6.453200e+10</td>
+<td>0.0</td>
+<td>2.491300e+10</td>
+<td>2.576000e+09</td>
+<td>1.500000e+07</td>
+<td>-3.600000e+07</td>
+<td>1.000000e+07</td>
+<td>4.494000e+09</td>
+<td>0.0</td>
+<td>6.190000e+09</td>
+<td>0.0</td>
+<td>-7.600000e+08</td>
+<td>2.468300e+10</td>
+<td>-1.608700e+10</td>
+<td>1.027300e+10</td>
+<td>4.198100e+10</td>
+<td>1.129700e+10</td>
+<td>NaN</td>
+<td>3.109500e+10</td>
+<td>9.733400e+10</td>
+<td>-1.557200e+10</td>
+<td>2.927400e+10</td>
+<td>-1.160300e+10</td>
+<td>5.048000e+10</td>
+<td>7.017000e+09</td>
+<td>1.320700e+10</td>
+<td>3.092500e+10</td>
+<td>4.480000e+08</td>
+<td>5.583800e+10</td>
+<td>8.412700e+10</td>
+<td>-7.600000e+08</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2019</td>
+<td>1.363000e+09</td>
+<td>-1.510200e+10</td>
+<td>4.585100e+10</td>
+<td>1.907900e+10</td>
+<td>9.155000e+09</td>
+<td>-1.961000e+09</td>
+<td>NaN</td>
+<td>2.360000e+08</td>
+<td>4.838000e+09</td>
+<td>8.975000e+09</td>
+<td>0.000000e+00</td>
+<td>1.277000e+10</td>
+<td>NaN</td>
+<td>5.741000e+09</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>2.898600e+10</td>
+<td>0.0</td>
+<td>4000000.0</td>
+<td>0.0</td>
+<td>1.871500e+10</td>
+<td>5.792700e+10</td>
+<td>2.481200e+10</td>
+<td>6.327000e+09</td>
+<td>8.940000e+08</td>
+<td>0.000000e+00</td>
+<td>NaN</td>
+<td>-4.254000e+09</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>8.600000e+07</td>
+<td>0.0</td>
+<td>-7.750000e+08</td>
+<td>3.697000e+10</td>
+<td>1.848500e+10</td>
+<td>1.848500e+10</td>
+<td>9.518000e+09</td>
+<td>8.144500e+10</td>
+<td>0.0</td>
+<td>2.898600e+10</td>
+<td>2.673000e+09</td>
+<td>1.500000e+07</td>
+<td>-3.600000e+07</td>
+<td>8.000000e+06</td>
+<td>1.118600e+10</td>
+<td>0.0</td>
+<td>7.745000e+09</td>
+<td>0.0</td>
+<td>-4.890000e+08</td>
+<td>4.478300e+10</td>
+<td>-6.539000e+09</td>
+<td>1.360000e+10</td>
+<td>5.569200e+10</td>
+<td>1.534100e+10</td>
+<td>NaN</td>
+<td>3.577600e+10</td>
+<td>1.333760e+11</td>
+<td>-7.299000e+09</td>
+<td>3.631400e+10</td>
+<td>-1.986400e+10</td>
+<td>6.622500e+10</td>
+<td>1.505300e+10</td>
+<td>3.232200e+10</td>
+<td>4.171100e+10</td>
+<td>-4.174000e+09</td>
+<td>7.069700e+10</td>
+<td>1.010540e+11</td>
+<td>-4.890000e+08</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2020</td>
+<td>1.331000e+09</td>
+<td>-1.511500e+10</td>
+<td>5.001800e+10</td>
+<td>1.757600e+10</td>
+<td>-1.325000e+09</td>
+<td>-1.512000e+09</td>
+<td>NaN</td>
+<td>9.100000e+07</td>
+<td>5.462000e+09</td>
+<td>-1.302000e+09</td>
+<td>0.000000e+00</td>
+<td>1.669200e+10</td>
+<td>NaN</td>
+<td>6.862000e+09</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>3.267100e+10</td>
+<td>0.0</td>
+<td>279000000.0</td>
+<td>0.0</td>
+<td>1.905000e+10</td>
+<td>6.927300e+10</td>
+<td>3.318000e+10</td>
+<td>4.034000e+09</td>
+<td>6.230000e+08</td>
+<td>0.000000e+00</td>
+<td>NaN</td>
+<td>-1.452000e+10</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>6.234000e+09</td>
+<td>0.0</td>
+<td>-5.800000e+08</td>
+<td>5.829200e+10</td>
+<td>2.914600e+10</td>
+<td>2.914600e+10</td>
+<td>1.133500e+10</td>
+<td>1.086170e+11</td>
+<td>0.0</td>
+<td>3.267100e+10</td>
+<td>2.758000e+09</td>
+<td>1.240000e+08</td>
+<td>-3.600000e+07</td>
+<td>2.410000e+08</td>
+<td>1.001800e+10</td>
+<td>0.0</td>
+<td>6.414000e+09</td>
+<td>0.0</td>
+<td>9.270000e+08</td>
+<td>5.498100e+10</td>
+<td>-9.836000e+09</td>
+<td>1.844700e+10</td>
+<td>7.734500e+10</td>
+<td>1.815500e+10</td>
+<td>NaN</td>
+<td>4.437800e+10</td>
+<td>1.593160e+11</td>
+<td>-1.029200e+10</td>
+<td>3.874700e+10</td>
+<td>-3.005900e+10</td>
+<td>7.567000e+10</td>
+<td>1.498100e+10</td>
+<td>3.102600e+10</td>
+<td>5.329400e+10</td>
+<td>5.090000e+08</td>
+<td>8.596500e+10</td>
+<td>1.282900e+11</td>
+<td>9.270000e+08</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2021</td>
+<td>4.083000e+09</td>
+<td>-1.856700e+10</td>
+<td>5.581100e+10</td>
+<td>1.660100e+10</td>
+<td>-1.089000e+09</td>
+<td>-3.110000e+09</td>
+<td>NaN</td>
+<td>1.623000e+09</td>
+<td>9.646000e+09</td>
+<td>2.187000e+09</td>
+<td>0.000000e+00</td>
+<td>2.264900e+10</td>
+<td>NaN</td>
+<td>7.967000e+09</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>4.675300e+10</td>
+<td>0.0</td>
+<td>-474000000.0</td>
+<td>0.0</td>
+<td>1.919700e+10</td>
+<td>9.528000e+10</td>
+<td>4.728400e+10</td>
+<td>7.914000e+09</td>
+<td>6.340000e+08</td>
+<td>0.000000e+00</td>
+<td>NaN</td>
+<td>1.213200e+10</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>6.775000e+09</td>
+<td>0.0</td>
+<td>-6.630000e+08</td>
+<td>7.874000e+10</td>
+<td>3.937000e+10</td>
+<td>3.937000e+10</td>
+<td>1.403900e+10</td>
+<td>1.050480e+11</td>
+<td>0.0</td>
+<td>4.675300e+10</td>
+<td>2.751000e+09</td>
+<td>-1.300000e+07</td>
+<td>-2.840000e+08</td>
+<td>1.490000e+08</td>
+<td>1.269800e+10</td>
+<td>0.0</td>
+<td>6.721000e+09</td>
+<td>0.0</td>
+<td>-6.930000e+08</td>
+<td>6.996400e+10</td>
+<td>-5.005200e+10</td>
+<td>2.465500e+10</td>
+<td>6.976100e+10</td>
+<td>2.387200e+10</td>
+<td>NaN</td>
+<td>3.139700e+10</td>
+<td>1.659870e+11</td>
+<td>-5.072800e+10</td>
+<td>5.768300e+10</td>
+<td>-7.570000e+09</td>
+<td>6.666600e+10</td>
+<td>2.113500e+10</td>
+<td>4.110800e+10</td>
+<td>7.117600e+10</td>
+<td>5.310000e+08</td>
+<td>1.179290e+11</td>
+<td>1.248790e+11</td>
+<td>-6.930000e+08</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2022</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>NaN</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>NaN</td>
+<td>0.000000e+00</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>0.000000e+00</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>NaN</td>
+<td>0.000000e+00</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>0.000000e+00</td>
+<td>0.0</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.0</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.0</td>
+<td>0.000000e+00</td>
+<td>0.0</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>NaN</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+</tr>
+<tr class="odd">
+<td rowspan="5" data-quarto-table-cell-role="th" data-valign="top">msft</td>
+<td data-quarto-table-cell-role="th">2018</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>NaN</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.0</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.0</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.0</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.0</td>
+<td>0.000000e+00</td>
+<td>0.0</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+<td>0.000000e+00</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2019</td>
+<td>9.382000e+09</td>
+<td>-1.392500e+10</td>
+<td>NaN</td>
+<td>1.135600e+10</td>
+<td>-5.900000e+08</td>
+<td>-2.812000e+09</td>
+<td>5.970000e+08</td>
+<td>4.694000e+09</td>
+<td>-2.521000e+09</td>
+<td>-1.542000e+09</td>
+<td>7.852000e+10</td>
+<td>4.291000e+10</td>
+<td>7.536000e+09</td>
+<td>1.160000e+10</td>
+<td>0.0</td>
+<td>-1.381100e+10</td>
+<td>4.295900e+10</td>
+<td>0.0</td>
+<td>-115000000.0</td>
+<td>0.0</td>
+<td>4.202600e+10</td>
+<td>8.293300e+10</td>
+<td>4.368800e+10</td>
+<td>4.448000e+09</td>
+<td>7.750000e+09</td>
+<td>-2.686000e+09</td>
+<td>2.063000e+09</td>
+<td>5.400000e+08</td>
+<td>1.142000e+09</td>
+<td>6.666200e+10</td>
+<td>2.649000e+09</td>
+<td>0.0</td>
+<td>-4.000000e+09</td>
+<td>7.848000e+10</td>
+<td>3.924000e+10</td>
+<td>3.924000e+10</td>
+<td>2.952400e+10</td>
+<td>5.255400e+10</td>
+<td>0.0</td>
+<td>4.295900e+10</td>
+<td>1.472300e+10</td>
+<td>-6.750000e+08</td>
+<td>-1.241000e+09</td>
+<td>1.013300e+10</td>
+<td>4.586000e+10</td>
+<td>0.0</td>
+<td>3.569900e+10</td>
+<td>0.0</td>
+<td>-3.400000e+08</td>
+<td>4.385600e+10</td>
+<td>-1.954300e+10</td>
+<td>1.687600e+10</td>
+<td>2.415000e+10</td>
+<td>2.309800e+10</td>
+<td>5.516000e+09</td>
+<td>1.224760e+11</td>
+<td>2.865560e+11</td>
+<td>-3.688700e+10</td>
+<td>5.218500e+10</td>
+<td>-1.577300e+10</td>
+<td>1.755520e+11</td>
+<td>6.942000e+10</td>
+<td>1.842260e+11</td>
+<td>8.288400e+10</td>
+<td>7.290000e+08</td>
+<td>1.258430e+11</td>
+<td>1.023300e+11</td>
+<td>-3.400000e+08</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2020</td>
+<td>1.253000e+10</td>
+<td>-1.544100e+10</td>
+<td>NaN</td>
+<td>1.357600e+10</td>
+<td>2.220000e+09</td>
+<td>-2.577000e+09</td>
+<td>1.680000e+08</td>
+<td>5.230000e+09</td>
+<td>5.577000e+09</td>
+<td>-6.730000e+08</td>
+<td>8.055200e+10</td>
+<td>4.607800e+10</td>
+<td>6.405000e+09</td>
+<td>1.230000e+10</td>
+<td>0.0</td>
+<td>-1.513700e+10</td>
+<td>5.295900e+10</td>
+<td>0.0</td>
+<td>-201000000.0</td>
+<td>0.0</td>
+<td>4.335100e+10</td>
+<td>9.693700e+10</td>
+<td>5.303600e+10</td>
+<td>8.755000e+09</td>
+<td>7.038000e+09</td>
+<td>-2.591000e+09</td>
+<td>1.895000e+09</td>
+<td>6.980000e+09</td>
+<td>1.343000e+09</td>
+<td>5.957800e+10</td>
+<td>2.965000e+09</td>
+<td>0.0</td>
+<td>-5.518000e+09</td>
+<td>8.856200e+10</td>
+<td>4.428100e+10</td>
+<td>4.428100e+10</td>
+<td>3.201100e+10</td>
+<td>6.791500e+10</td>
+<td>0.0</td>
+<td>5.295900e+10</td>
+<td>1.313800e+10</td>
+<td>-3.751000e+09</td>
+<td>-1.241000e+09</td>
+<td>1.151700e+10</td>
+<td>4.600100e+10</td>
+<td>0.0</td>
+<td>3.449200e+10</td>
+<td>0.0</td>
+<td>3.186000e+09</td>
+<td>5.290400e+10</td>
+<td>-2.296800e+10</td>
+<td>1.926900e+10</td>
+<td>3.456600e+10</td>
+<td>2.470900e+10</td>
+<td>3.749000e+09</td>
+<td>1.229160e+11</td>
+<td>3.013110e+11</td>
+<td>-4.603100e+10</td>
+<td>6.067500e+10</td>
+<td>-1.222300e+10</td>
+<td>1.819150e+11</td>
+<td>7.231000e+10</td>
+<td>1.830070e+11</td>
+<td>9.005600e+10</td>
+<td>7.700000e+07</td>
+<td>1.430150e+11</td>
+<td>1.183040e+11</td>
+<td>3.186000e+09</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2021</td>
+<td>1.516300e+10</td>
+<td>-2.062200e+10</td>
+<td>NaN</td>
+<td>1.422400e+10</td>
+<td>6.480000e+08</td>
+<td>-6.481000e+09</td>
+<td>-7.370000e+08</td>
+<td>7.431000e+09</td>
+<td>5.505000e+09</td>
+<td>1.160000e+09</td>
+<td>8.311100e+10</td>
+<td>5.223200e+10</td>
+<td>7.181000e+09</td>
+<td>1.090000e+10</td>
+<td>0.0</td>
+<td>-1.652100e+10</td>
+<td>6.991600e+10</td>
+<td>0.0</td>
+<td>-29000000.0</td>
+<td>0.0</td>
+<td>4.971100e+10</td>
+<td>1.158560e+11</td>
+<td>7.110200e+10</td>
+<td>9.831000e+09</td>
+<td>7.800000e+09</td>
+<td>-2.330000e+09</td>
+<td>2.636000e+09</td>
+<td>2.876000e+09</td>
+<td>1.693000e+09</td>
+<td>5.007400e+10</td>
+<td>5.984000e+09</td>
+<td>0.0</td>
+<td>-3.750000e+09</td>
+<td>1.225420e+11</td>
+<td>6.127100e+10</td>
+<td>6.127100e+10</td>
+<td>3.804300e+10</td>
+<td>8.447700e+10</td>
+<td>0.0</td>
+<td>6.991600e+10</td>
+<td>1.507500e+10</td>
+<td>-2.523000e+09</td>
+<td>-9.220000e+08</td>
+<td>1.347100e+10</td>
+<td>5.261200e+10</td>
+<td>0.0</td>
+<td>3.168100e+10</td>
+<td>0.0</td>
+<td>1.822000e+09</td>
+<td>7.080300e+10</td>
+<td>-2.738500e+10</td>
+<td>2.071600e+10</td>
+<td>5.705500e+10</td>
+<td>2.522400e+10</td>
+<td>8.072000e+09</td>
+<td>1.160320e+11</td>
+<td>3.337790e+11</td>
+<td>-4.848600e+10</td>
+<td>7.674000e+10</td>
+<td>-2.757700e+10</td>
+<td>1.844060e+11</td>
+<td>8.865700e+10</td>
+<td>1.917910e+11</td>
+<td>9.817200e+10</td>
+<td>1.186000e+09</td>
+<td>1.680880e+11</td>
+<td>1.419880e+11</td>
+<td>1.822000e+09</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2022</td>
+<td>1.900000e+10</td>
+<td>-2.388600e+10</td>
+<td>NaN</td>
+<td>1.393100e+10</td>
+<td>-2.930000e+08</td>
+<td>-6.834000e+09</td>
+<td>-1.123000e+09</td>
+<td>8.052000e+09</td>
+<td>1.251000e+09</td>
+<td>-3.450000e+08</td>
+<td>8.693900e+10</td>
+<td>6.265000e+10</td>
+<td>1.351500e+10</td>
+<td>1.460000e+10</td>
+<td>0.0</td>
+<td>-1.813500e+10</td>
+<td>8.338300e+10</td>
+<td>0.0</td>
+<td>-141000000.0</td>
+<td>0.0</td>
+<td>6.752400e+10</td>
+<td>1.356200e+11</td>
+<td>8.371600e+10</td>
+<td>1.097800e+10</td>
+<td>1.129800e+10</td>
+<td>-2.047000e+09</td>
+<td>3.742000e+09</td>
+<td>1.843800e+10</td>
+<td>1.841000e+09</td>
+<td>4.703200e+10</td>
+<td>6.891000e+09</td>
+<td>0.0</td>
+<td>-9.023000e+09</td>
+<td>1.454760e+11</td>
+<td>7.273800e+10</td>
+<td>7.273800e+10</td>
+<td>4.426100e+10</td>
+<td>8.772000e+10</td>
+<td>0.0</td>
+<td>8.338300e+10</td>
+<td>2.189700e+10</td>
+<td>-8.630000e+08</td>
+<td>-2.825000e+09</td>
+<td>1.693200e+10</td>
+<td>5.938400e+10</td>
+<td>0.0</td>
+<td>3.085300e+10</td>
+<td>0.0</td>
+<td>-4.678000e+09</td>
+<td>8.754600e+10</td>
+<td>-3.269600e+10</td>
+<td>2.451200e+10</td>
+<td>8.428100e+10</td>
+<td>2.772500e+10</td>
+<td>2.749000e+09</td>
+<td>9.081800e+10</td>
+<td>3.648400e+11</td>
+<td>-5.887600e+10</td>
+<td>8.903500e+10</td>
+<td>-3.031100e+10</td>
+<td>1.696840e+11</td>
+<td>9.508200e+10</td>
+<td>1.982980e+11</td>
+<td>1.148870e+11</td>
+<td>3.330000e+08</td>
+<td>1.982700e+11</td>
+<td>1.665420e+11</td>
+<td>-4.678000e+09</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>And this gets us there!</p>
+<p>As you can see, every column corresponds to a different variable. The first two are <code>"ticker"</code> and <code>"Year"</code>, which identify the observations. The remainder are financial fundamentals data. We’re ready to do our calculated fields next.</p>
+<p>This table is equivalent to the second pivot table we made in Excel, where the years are in the columns. There isn’t an easy way to include a slicer for years in Pandas, though we can easily filter the dataset by year. We’ll leave it as the whole time range for now.</p>
+</section>
+<section id="what-did-we-just-do" class="level1">
+<h1>What did we just do?</h1>
+<p>It’s worth outlining what we’ve done in this series of dataframe transformations.</p>
+<p>Our first dataframe, <code>big_tech</code>, was very simple. One column for what <code>"Breakdown"</code> is being covered, one for which company’s <code>"ticker"</code>, and each column after that is a year. The rows have values for that breakdown, company, and year. This wasn’t very useful. We want to compare each company’s variables across years, and it’s hard to plot that from this format. As well, matching multiple variables in the same year is very hard, so we can’t make our calculated fields.</p>
+<p>The <code>melt()</code> Pandas function takes you from “wide” format (where one variable’s information is in multiple columns) and to “long” format (by breaking the rows apart and stacking them up). So, we melted <code>big_tech</code> to <code>big_tech_melt</code>. This turned each row into a ticker/year/breakdown combo, which is an improvement. But we still need to get the columns to be the different variables for each company, matched by year. Each row has to be for one company for one year. <code>big_tech_melt</code> cannot offer this yet.</p>
+<p>By using a pivot table, we got there. <code>table_2_equiv</code> is our version of the second pivot table (with years in the columns) in the Excel section. The dataframe is a grid. Every column is a different variable, and every row corresponds to a single company in a single year. Now that it’s Tidy, it’s easy to do column operations, plotting, modelling, or whatever else we feel like.</p>
+</section>
+<section id="calculated-items" class="level1">
+<h1>Calculated Items</h1>
+<div class="cell" data-execution_count="112">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># table 2 calculated items</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co"># copying to create new dataframe so we can still use `table_2_equiv` if desired</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>table_2_calculations <span class="op">=</span> table_2_equiv.copy()</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="co"># we access the columns with their names in square brackets, and do normal Python math operations</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>table_2_calculations[<span class="st">"CurrentRatio"</span>] <span class="op">=</span> table_2_calculations[<span class="st">"totalCurrentAssets"</span>]<span class="op">/</span>table_2_calculations[<span class="st">"totalCurrentLiabilities"</span>]</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>table_2_calculations[<span class="st">"DebtRatio"</span>] <span class="op">=</span> table_2_calculations[<span class="st">"totalLiab"</span>]<span class="op">/</span>table_2_calculations[<span class="st">"totalAssets"</span>]</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>table_2_calculations[<span class="st">"ProfitMargin_OperatingProfit"</span>] <span class="op">=</span> table_2_calculations[<span class="st">"operatingIncome"</span>]<span class="op">/</span>table_2_calculations[<span class="st">"totalRevenue"</span>]</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>table_2_calculations[<span class="st">"ProfitMargin_NetIncome"</span>] <span class="op">=</span> table_2_calculations[<span class="st">"netIncomeApplicableToCommonShares"</span>]<span class="op">/</span>table_2_calculations[<span class="st">"totalRevenue"</span>]</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>table_2_calculations[<span class="st">"InterestCoverage"</span>] <span class="op">=</span> table_2_calculations[<span class="st">"operatingIncome"</span>]<span class="op">/</span>table_2_calculations[<span class="st">"interestExpense"</span>]</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a><span class="co"># now we filter to just the variables of interest</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>table_2_calculations <span class="op">=</span> table_2_calculations[[<span class="st">"CurrentRatio"</span>, <span class="st">"DebtRatio"</span>, <span class="st">"ProfitMargin_OperatingProfit"</span>, <span class="st">"ProfitMargin_NetIncome"</span>, <span class="st">"InterestCoverage"</span>]]</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>table_2_calculations</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="112">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Breakdown</th>
+<th data-quarto-table-cell-role="th">CurrentRatio</th>
+<th data-quarto-table-cell-role="th">DebtRatio</th>
+<th data-quarto-table-cell-role="th">ProfitMargin_OperatingProfit</th>
+<th data-quarto-table-cell-role="th">ProfitMargin_NetIncome</th>
+<th data-quarto-table-cell-role="th">InterestCoverage</th>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">ticker</th>
+<th data-quarto-table-cell-role="th">Year</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td rowspan="5" data-quarto-table-cell-role="th" data-valign="top">aapl</td>
+<td data-quarto-table-cell-role="th">2018</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2019</td>
+<td>1.540126</td>
+<td>0.732692</td>
+<td>0.245720</td>
+<td>0.212381</td>
+<td>-17.877517</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2020</td>
+<td>1.363604</td>
+<td>0.798267</td>
+<td>0.241473</td>
+<td>0.209136</td>
+<td>-23.072746</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2021</td>
+<td>1.074553</td>
+<td>0.820257</td>
+<td>0.297824</td>
+<td>0.258818</td>
+<td>-41.190548</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2022</td>
+<td>0.879356</td>
+<td>0.856354</td>
+<td>0.302887</td>
+<td>0.253096</td>
+<td>-40.749574</td>
+</tr>
+<tr class="even">
+<td rowspan="5" data-quarto-table-cell-role="th" data-valign="top">amzn</td>
+<td data-quarto-table-cell-role="th">2018</td>
+<td>1.098112</td>
+<td>0.732250</td>
+<td>0.053335</td>
+<td>0.043253</td>
+<td>-8.765702</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2019</td>
+<td>1.097048</td>
+<td>0.724481</td>
+<td>0.051836</td>
+<td>0.041309</td>
+<td>-9.088125</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2020</td>
+<td>1.050227</td>
+<td>0.709198</td>
+<td>0.059314</td>
+<td>0.055252</td>
+<td>-13.903461</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2021</td>
+<td>1.135760</td>
+<td>0.671275</td>
+<td>0.052954</td>
+<td>0.071014</td>
+<td>-13.752902</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2022</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td rowspan="5" data-quarto-table-cell-role="th" data-valign="top">goog</td>
+<td data-quarto-table-cell-role="th">2018</td>
+<td>3.919006</td>
+<td>0.236967</td>
+<td>0.238234</td>
+<td>0.224647</td>
+<td>-285.921053</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2019</td>
+<td>3.374052</td>
+<td>0.269897</td>
+<td>0.221974</td>
+<td>0.212181</td>
+<td>-359.280000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2020</td>
+<td>3.066756</td>
+<td>0.303714</td>
+<td>0.225852</td>
+<td>0.220619</td>
+<td>-305.362963</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2021</td>
+<td>2.928113</td>
+<td>0.299590</td>
+<td>0.305523</td>
+<td>0.295117</td>
+<td>-227.497110</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2022</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td rowspan="5" data-quarto-table-cell-role="th" data-valign="top">meta</td>
+<td data-quarto-table-cell-role="th">2018</td>
+<td>7.193958</td>
+<td>0.135687</td>
+<td>0.446166</td>
+<td>0.395985</td>
+<td>inf</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2019</td>
+<td>4.399455</td>
+<td>0.242337</td>
+<td>0.410003</td>
+<td>0.261468</td>
+<td>inf</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2020</td>
+<td>5.051065</td>
+<td>0.194745</td>
+<td>0.380050</td>
+<td>0.339045</td>
+<td>inf</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2021</td>
+<td>3.154294</td>
+<td>0.247658</td>
+<td>0.396450</td>
+<td>0.333845</td>
+<td>inf</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2022</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td rowspan="5" data-quarto-table-cell-role="th" data-valign="top">msft</td>
+<td data-quarto-table-cell-role="th">2018</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2019</td>
+<td>2.528839</td>
+<td>0.642897</td>
+<td>0.341370</td>
+<td>0.311817</td>
+<td>-15.993671</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2020</td>
+<td>2.515765</td>
+<td>0.607369</td>
+<td>0.370304</td>
+<td>0.309625</td>
+<td>-20.439599</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2021</td>
+<td>2.079994</td>
+<td>0.574605</td>
+<td>0.415949</td>
+<td>0.364517</td>
+<td>-30.006867</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2022</td>
+<td>1.784607</td>
+<td>0.543520</td>
+<td>0.420553</td>
+<td>0.366863</td>
+<td>-40.734245</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>I cannot plot this - I need to reset the index and fill the NaN values with 0.</p>
+<div class="cell" data-execution_count="113">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>table_2_calculations_resetindex <span class="op">=</span> table_2_calculations.reset_index()</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>t2_nanzero <span class="op">=</span> table_2_calculations_resetindex.fillna(<span class="dv">0</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>t2_nanzero</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="113">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">Breakdown</th>
+<th data-quarto-table-cell-role="th">ticker</th>
+<th data-quarto-table-cell-role="th">Year</th>
+<th data-quarto-table-cell-role="th">CurrentRatio</th>
+<th data-quarto-table-cell-role="th">DebtRatio</th>
+<th data-quarto-table-cell-role="th">ProfitMargin_OperatingProfit</th>
+<th data-quarto-table-cell-role="th">ProfitMargin_NetIncome</th>
+<th data-quarto-table-cell-role="th">InterestCoverage</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>aapl</td>
+<td>2018</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>aapl</td>
+<td>2019</td>
+<td>1.540126</td>
+<td>0.732692</td>
+<td>0.245720</td>
+<td>0.212381</td>
+<td>-17.877517</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>aapl</td>
+<td>2020</td>
+<td>1.363604</td>
+<td>0.798267</td>
+<td>0.241473</td>
+<td>0.209136</td>
+<td>-23.072746</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>aapl</td>
+<td>2021</td>
+<td>1.074553</td>
+<td>0.820257</td>
+<td>0.297824</td>
+<td>0.258818</td>
+<td>-41.190548</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>aapl</td>
+<td>2022</td>
+<td>0.879356</td>
+<td>0.856354</td>
+<td>0.302887</td>
+<td>0.253096</td>
+<td>-40.749574</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>amzn</td>
+<td>2018</td>
+<td>1.098112</td>
+<td>0.732250</td>
+<td>0.053335</td>
+<td>0.043253</td>
+<td>-8.765702</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>amzn</td>
+<td>2019</td>
+<td>1.097048</td>
+<td>0.724481</td>
+<td>0.051836</td>
+<td>0.041309</td>
+<td>-9.088125</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>amzn</td>
+<td>2020</td>
+<td>1.050227</td>
+<td>0.709198</td>
+<td>0.059314</td>
+<td>0.055252</td>
+<td>-13.903461</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>amzn</td>
+<td>2021</td>
+<td>1.135760</td>
+<td>0.671275</td>
+<td>0.052954</td>
+<td>0.071014</td>
+<td>-13.752902</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>amzn</td>
+<td>2022</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">10</td>
+<td>goog</td>
+<td>2018</td>
+<td>3.919006</td>
+<td>0.236967</td>
+<td>0.238234</td>
+<td>0.224647</td>
+<td>-285.921053</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">11</td>
+<td>goog</td>
+<td>2019</td>
+<td>3.374052</td>
+<td>0.269897</td>
+<td>0.221974</td>
+<td>0.212181</td>
+<td>-359.280000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">12</td>
+<td>goog</td>
+<td>2020</td>
+<td>3.066756</td>
+<td>0.303714</td>
+<td>0.225852</td>
+<td>0.220619</td>
+<td>-305.362963</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">13</td>
+<td>goog</td>
+<td>2021</td>
+<td>2.928113</td>
+<td>0.299590</td>
+<td>0.305523</td>
+<td>0.295117</td>
+<td>-227.497110</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">14</td>
+<td>goog</td>
+<td>2022</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">15</td>
+<td>meta</td>
+<td>2018</td>
+<td>7.193958</td>
+<td>0.135687</td>
+<td>0.446166</td>
+<td>0.395985</td>
+<td>inf</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16</td>
+<td>meta</td>
+<td>2019</td>
+<td>4.399455</td>
+<td>0.242337</td>
+<td>0.410003</td>
+<td>0.261468</td>
+<td>inf</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">17</td>
+<td>meta</td>
+<td>2020</td>
+<td>5.051065</td>
+<td>0.194745</td>
+<td>0.380050</td>
+<td>0.339045</td>
+<td>inf</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">18</td>
+<td>meta</td>
+<td>2021</td>
+<td>3.154294</td>
+<td>0.247658</td>
+<td>0.396450</td>
+<td>0.333845</td>
+<td>inf</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">19</td>
+<td>meta</td>
+<td>2022</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">20</td>
+<td>msft</td>
+<td>2018</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+<td>0.000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">21</td>
+<td>msft</td>
+<td>2019</td>
+<td>2.528839</td>
+<td>0.642897</td>
+<td>0.341370</td>
+<td>0.311817</td>
+<td>-15.993671</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22</td>
+<td>msft</td>
+<td>2020</td>
+<td>2.515765</td>
+<td>0.607369</td>
+<td>0.370304</td>
+<td>0.309625</td>
+<td>-20.439599</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">23</td>
+<td>msft</td>
+<td>2021</td>
+<td>2.079994</td>
+<td>0.574605</td>
+<td>0.415949</td>
+<td>0.364517</td>
+<td>-30.006867</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">24</td>
+<td>msft</td>
+<td>2022</td>
+<td>1.784607</td>
+<td>0.543520</td>
+<td>0.420553</td>
+<td>0.366863</td>
+<td>-40.734245</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Now it’s ready for plotting. I’m going to make a series of grouped bar plots. Each barplot shows one variable for each company and year.</p>
+</section>
+<section id="making-pivot-table-plots" class="level1">
+<h1>Making Pivot Table Plots</h1>
+<section id="current-ratio-plot" class="level3">
+<h3 class="anchored" data-anchor-id="current-ratio-plot">1. Current Ratio Plot</h3>
+<div class="cell" data-execution_count="114">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>bars <span class="op">=</span> sns.barplot(data<span class="op">=</span>table_2_calculations_resetindex, x <span class="op">=</span> <span class="st">"ticker"</span>, y <span class="op">=</span> <span class="st">"CurrentRatio"</span>, hue<span class="op">=</span><span class="st">"Year"</span>, palette <span class="op">=</span> <span class="st">"mako"</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Firm"</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Current Ratio"</span>)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Big Tech Current Ratio by Year"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="114">
+<pre><code>Text(0.5, 1.0, 'Big Tech Current Ratio by Year')</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="query_function_files/figure-html/cell-16-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+</section>
+<section id="debt-ratio-plot" class="level3">
+<h3 class="anchored" data-anchor-id="debt-ratio-plot">2. Debt Ratio Plot</h3>
+<div class="cell" data-execution_count="115">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.array([<span class="fl">0.0</span>, <span class="fl">2.0</span>, <span class="fl">4.0</span>, <span class="fl">6.0</span>])</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>bars <span class="op">=</span> sns.barplot(data<span class="op">=</span>table_2_calculations_resetindex, x <span class="op">=</span> <span class="st">"ticker"</span>, y <span class="op">=</span> <span class="st">"DebtRatio"</span>, hue<span class="op">=</span><span class="st">"Year"</span>, palette <span class="op">=</span> <span class="st">"mako"</span>)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Firm"</span>)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Debt Ratio"</span>)</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Big Tech Debt Ratio by Year"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="115">
+<pre><code>Text(0.5, 1.0, 'Big Tech Debt Ratio by Year')</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="query_function_files/figure-html/cell-17-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+</section>
+<section id="profit-margin-operating-profit-plot" class="level3">
+<h3 class="anchored" data-anchor-id="profit-margin-operating-profit-plot">3. Profit Margin (Operating Profit) Plot</h3>
+<div class="cell" data-execution_count="116">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>bars <span class="op">=</span> sns.barplot(data<span class="op">=</span>table_2_calculations_resetindex, x <span class="op">=</span> <span class="st">"ticker"</span>, y <span class="op">=</span> <span class="st">"ProfitMargin_OperatingProfit"</span>, hue<span class="op">=</span><span class="st">"Year"</span>, palette <span class="op">=</span> <span class="st">"mako"</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Firm"</span>)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Profit Margin (Using Operating Profit)"</span>)</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Big Tech Profit Margin (Operating Profits) by Year"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="116">
+<pre><code>Text(0.5, 1.0, 'Big Tech Profit Margin (Operating Profits) by Year')</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="query_function_files/figure-html/cell-18-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+</section>
+<section id="profit-margin-net-income-plot" class="level3">
+<h3 class="anchored" data-anchor-id="profit-margin-net-income-plot">4. Profit Margin (Net Income) Plot</h3>
+<div class="cell" data-execution_count="117">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>bars <span class="op">=</span> sns.barplot(data<span class="op">=</span>table_2_calculations_resetindex, x <span class="op">=</span> <span class="st">"ticker"</span>, y <span class="op">=</span> <span class="st">"ProfitMargin_NetIncome"</span>, hue<span class="op">=</span><span class="st">"Year"</span>, palette <span class="op">=</span> <span class="st">"mako"</span>)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Firm"</span>)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Profit Margin (Using Net Income)"</span>)</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Big Tech Profit Margin (Available Income) by Year"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="117">
+<pre><code>Text(0.5, 1.0, 'Big Tech Profit Margin (Available Income) by Year')</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="query_function_files/figure-html/cell-19-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+</section>
+<section id="interest-coverage-plot" class="level3">
+<h3 class="anchored" data-anchor-id="interest-coverage-plot">5. Interest Coverage Plot</h3>
+<div class="cell" data-execution_count="118">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Interest Coverage plot</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>bars <span class="op">=</span> sns.barplot(data<span class="op">=</span>table_2_calculations_resetindex, x <span class="op">=</span> <span class="st">"ticker"</span>, y <span class="op">=</span> <span class="st">"InterestCoverage"</span>, hue<span class="op">=</span><span class="st">"Year"</span>, palette <span class="op">=</span> <span class="st">"mako"</span>)</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Firm"</span>)</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Interest Coverage"</span>)</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Big Tech Interest Coverage by Year"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="118">
+<pre><code>Text(0.5, 1.0, 'Big Tech Interest Coverage by Year')</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="query_function_files/figure-html/cell-20-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Note that meta’s Interest Coverage value comes up empty, but is actually infinite! This is because their <code>interestExpense</code> variable is 0.0, and the divide by 0 creates an infinite value for Interest Coverage.</p>
+<div class="cell" data-execution_count="119">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>table_2_calculations</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="119">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Breakdown</th>
+<th data-quarto-table-cell-role="th">CurrentRatio</th>
+<th data-quarto-table-cell-role="th">DebtRatio</th>
+<th data-quarto-table-cell-role="th">ProfitMargin_OperatingProfit</th>
+<th data-quarto-table-cell-role="th">ProfitMargin_NetIncome</th>
+<th data-quarto-table-cell-role="th">InterestCoverage</th>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">ticker</th>
+<th data-quarto-table-cell-role="th">Year</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td rowspan="5" data-quarto-table-cell-role="th" data-valign="top">aapl</td>
+<td data-quarto-table-cell-role="th">2018</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2019</td>
+<td>1.540126</td>
+<td>0.732692</td>
+<td>0.245720</td>
+<td>0.212381</td>
+<td>-17.877517</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2020</td>
+<td>1.363604</td>
+<td>0.798267</td>
+<td>0.241473</td>
+<td>0.209136</td>
+<td>-23.072746</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2021</td>
+<td>1.074553</td>
+<td>0.820257</td>
+<td>0.297824</td>
+<td>0.258818</td>
+<td>-41.190548</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2022</td>
+<td>0.879356</td>
+<td>0.856354</td>
+<td>0.302887</td>
+<td>0.253096</td>
+<td>-40.749574</td>
+</tr>
+<tr class="even">
+<td rowspan="5" data-quarto-table-cell-role="th" data-valign="top">amzn</td>
+<td data-quarto-table-cell-role="th">2018</td>
+<td>1.098112</td>
+<td>0.732250</td>
+<td>0.053335</td>
+<td>0.043253</td>
+<td>-8.765702</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2019</td>
+<td>1.097048</td>
+<td>0.724481</td>
+<td>0.051836</td>
+<td>0.041309</td>
+<td>-9.088125</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2020</td>
+<td>1.050227</td>
+<td>0.709198</td>
+<td>0.059314</td>
+<td>0.055252</td>
+<td>-13.903461</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2021</td>
+<td>1.135760</td>
+<td>0.671275</td>
+<td>0.052954</td>
+<td>0.071014</td>
+<td>-13.752902</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2022</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td rowspan="5" data-quarto-table-cell-role="th" data-valign="top">goog</td>
+<td data-quarto-table-cell-role="th">2018</td>
+<td>3.919006</td>
+<td>0.236967</td>
+<td>0.238234</td>
+<td>0.224647</td>
+<td>-285.921053</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2019</td>
+<td>3.374052</td>
+<td>0.269897</td>
+<td>0.221974</td>
+<td>0.212181</td>
+<td>-359.280000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2020</td>
+<td>3.066756</td>
+<td>0.303714</td>
+<td>0.225852</td>
+<td>0.220619</td>
+<td>-305.362963</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2021</td>
+<td>2.928113</td>
+<td>0.299590</td>
+<td>0.305523</td>
+<td>0.295117</td>
+<td>-227.497110</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2022</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td rowspan="5" data-quarto-table-cell-role="th" data-valign="top">meta</td>
+<td data-quarto-table-cell-role="th">2018</td>
+<td>7.193958</td>
+<td>0.135687</td>
+<td>0.446166</td>
+<td>0.395985</td>
+<td>inf</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2019</td>
+<td>4.399455</td>
+<td>0.242337</td>
+<td>0.410003</td>
+<td>0.261468</td>
+<td>inf</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2020</td>
+<td>5.051065</td>
+<td>0.194745</td>
+<td>0.380050</td>
+<td>0.339045</td>
+<td>inf</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2021</td>
+<td>3.154294</td>
+<td>0.247658</td>
+<td>0.396450</td>
+<td>0.333845</td>
+<td>inf</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2022</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td rowspan="5" data-quarto-table-cell-role="th" data-valign="top">msft</td>
+<td data-quarto-table-cell-role="th">2018</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2019</td>
+<td>2.528839</td>
+<td>0.642897</td>
+<td>0.341370</td>
+<td>0.311817</td>
+<td>-15.993671</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2020</td>
+<td>2.515765</td>
+<td>0.607369</td>
+<td>0.370304</td>
+<td>0.309625</td>
+<td>-20.439599</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2021</td>
+<td>2.079994</td>
+<td>0.574605</td>
+<td>0.415949</td>
+<td>0.364517</td>
+<td>-30.006867</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2022</td>
+<td>1.784607</td>
+<td>0.543520</td>
+<td>0.420553</td>
+<td>0.366863</td>
+<td>-40.734245</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="120">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>table_2_equiv[<span class="st">"interestExpense"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="120">
+<pre><code>ticker  Year
+aapl    2018    0.000000e+00
+        2019   -3.576000e+09
+        2020   -2.873000e+09
+        2021   -2.645000e+09
+        2022   -2.931000e+09
+amzn    2018   -1.417000e+09
+        2019   -1.600000e+09
+        2020   -1.647000e+09
+        2021   -1.809000e+09
+        2022    0.000000e+00
+goog    2018   -1.140000e+08
+        2019   -1.000000e+08
+        2020   -1.350000e+08
+        2021   -3.460000e+08
+        2022    0.000000e+00
+meta    2018    0.000000e+00
+        2019    0.000000e+00
+        2020    0.000000e+00
+        2021    0.000000e+00
+        2022    0.000000e+00
+msft    2018    0.000000e+00
+        2019   -2.686000e+09
+        2020   -2.591000e+09
+        2021   -2.330000e+09
+        2022   -2.047000e+09
+Name: interestExpense, dtype: float64</code></pre>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
