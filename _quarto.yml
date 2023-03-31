@@ -23,9 +23,9 @@ website:
     right:
       - about.qmd
       - icon: github
-        href: https://github.com/
+        href: https://github.com/HJIzt/MFRE_Data_Hub
       - icon: twitter
-        href: https://twitter.com
+        href: https://twitter.com/mfreUBC?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor
 
 format:
   html:

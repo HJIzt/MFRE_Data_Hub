@@ -1,19 +1,22 @@
 ---
 title: "About"
-image: profile.jpg
+image: mfre_faculty.png
 about:
   template: jolla
   links:
     - icon: twitter
       text: Twitter
-      href: https://twitter.com
+      href: https://twitter.com/mfreUBC?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor
     - icon: linkedin
       text: LinkedIn
-      href: https://linkedin.com
+      href: https://www.linkedin.com/school/master-of-food-and-resource-economics/
     - icon: github
       text: Github
-      href: https://github.com
+      href: https://github.com/HJIzt/MFRE_Data_Hub
 
 ---
 
-About this blog
+MFRE is a unique one year masters degree combining Economics, Policy and Business as understood from an Agriculture, Food, Natural Resources and Environmental perspective. This professional degree combines the economic rigour of a Masters in Economics, with the business elements of MBA programs, and equips you to analyze real-world environmental issues through applied economics and quantitative skills.
+
+With an ever-increasing focus on empirical studies and data analysis, we have created the Data Hub as a central reference for our students to access tutorials for working on their quantitative skills, as well as curated datasets ideal for work in the Food and Resource sectors.
+

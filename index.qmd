@@ -1,5 +1,5 @@
 ---
-title: "MFRE_DATA_HUB_QUARTO"
+title: "MFRE Data Hub"
 listing:
   contents: posts
   sort: "date desc"
