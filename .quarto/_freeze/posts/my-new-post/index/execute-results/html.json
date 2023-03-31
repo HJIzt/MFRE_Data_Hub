@@ -1,0 +1,14 @@
+{
+  "hash": "7f20aab9b52f8402293dda72a7f7f5a8",
+  "result": {
+    "markdown": "---\ntitle: \"Sample Post 1\"\nauthor: \"Harry Izatt\"\ndate: \"2023-03-31\"\ncategories: [code]\nimage: \"mfre_logo.png\"\n---\n\n\nThis is the first sample blogpost for the MFRE Data Hub.\n\n\n\n::: {.cell}\n\n```{.r .cell-code}\n1 + 1\n```\n\n::: {.cell-output .cell-output-stdout}\n```\n[1] 2\n```\n:::\n:::",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

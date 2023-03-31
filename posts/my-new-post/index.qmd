@@ -1,0 +1,15 @@
+---
+title: "Sample Post 1"
+author: "Harry Izatt"
+date: "2023-03-31"
+categories: [code]
+image: "mfre_logo.png"
+---
+
+This is the first sample blogpost for the MFRE Data Hub.
+
+
+```{r}
+1 + 1
+
+```
