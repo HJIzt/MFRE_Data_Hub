@@ -18,8 +18,13 @@ website:
         contents:
       - section: "SQL Resources"
         contents:
-      - section: "Recommended Data Sources"
+      - section: "Recommended Data Sources: General Sites"
         contents:
+      - section: "Recommended Data Sources: Datasets"
+        contents:
+      - section: "Student Projects"
+        contents: 
+        
   navbar:
     right:
       - about.qmd
