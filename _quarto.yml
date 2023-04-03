@@ -8,6 +8,16 @@ website:
     style: "docked"
     search: true
     contents: 
+      - section: "Summer Boot Camp"
+        contents:
+        - section: "R"
+          contents:
+        - section: "Python"
+          contents: 
+        - section: "Excel"
+          contents:
+        - section: "Other"
+          contents:
       - section: "Python Resources"
         contents:
         - introduction_to_python.ipynb
